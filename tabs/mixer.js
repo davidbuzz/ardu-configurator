@@ -70,7 +70,6 @@ function buzz_veh_sels(prev_selection) {
         window.currentPlatform = currentPlatform;
         //buzz here
 
-
         var platformSelectParent = platformSelect.parent('.select');
 
         if (currentPlatform.flapsPossible) {
@@ -97,7 +96,7 @@ function buzz_veh_sels(prev_selection) {
 
     currentPlatform =  platformList[MIXER_CONFIG.platformType];
 
-    platformSelect.val(MIXER_CONFIG.platformType).change();
+    //platformSelect.val(MIXER_CONFIG.platformType).change();
 
 
     mixerPreset.change(function () {
