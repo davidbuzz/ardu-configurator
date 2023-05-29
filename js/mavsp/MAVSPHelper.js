@@ -1029,8 +1029,11 @@ var mspHelper = (function (gui) {
                 switch ( mavmsg.command ) { //any of MAV_CMD_*  's 
                     case mavlink20.MAV_CMD_ACCELCAL_VEHICLE_POS:  //
                         FC.longyREQ = mavmsg.param1; // veh pos 1 means 'please level' then ack., 
-                        console.log('receiving COMMAND_LONG MAV_CMD_ACCELCAL_VEHICLE_POS -->');console.log(mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
-
+                        if (mavmsg.param1 != mavlink20.ACCELCAL_VEHICLE_POS_FAILED ) { //ACCELCAL_VEHICLE_POS_FAILED=16777216
+                            console.log('receiving COMMAND_LONG MAV_CMD_ACCELCAL_VEHICLE_POS -->');console.log(mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
+                        } else {
+                            // todo clear that error without a reboot.
+                        }
                         break;
                     case mavlink20.MAV_CMD_DO_SET_MODE: // 176 
                         // buzz todo, this is the acknowledgement of a mode-change request.
