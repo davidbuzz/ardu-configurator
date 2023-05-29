@@ -102,6 +102,7 @@ PortHandler.check = function () {
                     if (result.last_used_port) {
                         current_ports.forEach(function(port) {
                             if (port == result.last_used_port) {
+                                GUI.log('Selecting last used port: ' + result.last_used_port);
                                 console.log('Selecting last used port: ' + result.last_used_port);   
                                 $('#port').val(result.last_used_port);
                                 //buzz autoconnect here
