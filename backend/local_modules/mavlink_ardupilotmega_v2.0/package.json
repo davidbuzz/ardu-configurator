@@ -30,8 +30,8 @@
   "dependencies": {
     "underscore": "",
     "winston": "",
-    "jspack": "file:local_modules/jspack",
-    "long": "file:local_modules/long"
+    "jspack": "file:backend/local_modules/jspack",
+    "long": "file:backend/local_modules/long"
   },
   "devDependencies": {
     "should": "",
