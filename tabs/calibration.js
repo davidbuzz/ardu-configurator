@@ -142,12 +142,15 @@ TABS.calibration.initialize = function (callback) {
                 }
             }
             updateCalibrationSteps();
+
+            $('div.note').html("Asking Flight Controller...<br>");
+
     
         }
 
 
         // error state, start over
-        if (FC.longyREQ > 255 ) { FC.longyREQ = 99999;  } // success
+        //if (FC.longyREQ > 255 ) { FC.longyREQ = 99999;  } // success or failure is both > 99999
 
         // at FIRST step, we send a COMMAND_LONG , CMD=241 ,ie MAV_CMD_PREFLIGHT_CALIBRATION and 'param5 = 1'
         if ((TABS.calibration.model == 0)  && (FC.longyREQ == 0) ) { 
@@ -173,10 +176,17 @@ TABS.calibration.initialize = function (callback) {
             GUI.log(chrome.i18n.getMessage('initialSetupAccelCalibProgress'));
 
         }
+        // if it fails early..
+        if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_FAILED ) {
+            TABS.calibration.model = 6;
+        }
 
         // 
         if (TABS.calibration.model > 6) {
             TABS.calibration.model =0; 
+            FC.longyREQ == 0;// allow start over.
+            helper['autoconnect'] = true; // to simplify user experience.
+            reboot();
         }
  
 

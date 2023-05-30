@@ -315,6 +315,8 @@ APJ_protocol.prototype.read = function (readInfo) {
 
     //TODO if data.length == 0 , then we got no response and should timeout sooner..
 
+    //TODO if data.length == 0 , then we got no response and should timeout sooner..
+
     for (var i = 0; i < data.length; i++) {
         this.receive_buffer.push(data[i]);
     }
