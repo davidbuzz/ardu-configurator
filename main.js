@@ -202,9 +202,10 @@ $(document).ready( function () {
                 return;
             }
 
+            // must be connected in order to see certain tabs...
             if (GUI.allowedTabs.indexOf(tab) < 0) {
-                GUI.log(chrome.i18n.getMessage('tabSwitchUpgradeRequired', [tabName]));
-                return;
+                GUI.log(chrome.i18n.getMessage('tabSwitchConnectionRequired', [tabName]));
+                return;  
             }
 
             GUI.tab_switch_in_progress = true;
