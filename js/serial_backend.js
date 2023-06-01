@@ -398,7 +398,7 @@ function onConnect() {
     /*
      * Get BOXNAMES since it is used for some reason....
      */
-    MSP.send_message(MSPCodes.MSP_BOXNAMES, false, false);
+    //MSP.send_message(MSPCodes.MSP_BOXNAMES, false, false);
 
     /*
      * Init PIDs bank with a length that depends on the version
