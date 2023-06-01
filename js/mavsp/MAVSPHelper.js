@@ -370,7 +370,7 @@ var mspHelper = (function (gui) {
 
                 // buzz todo
                 break;
-                case mavlink20.MAVLINK_MSG_ID_AUTOPILOT_VERSION:
+            case mavlink20.MAVLINK_MSG_ID_AUTOPILOT_VERSION:
                     // borrowed from here https://github.com/ArduPilot/APWeb
                     var flight_sw_version = mavmsg.flight_sw_version;
                     var major_version = flight_sw_version >> 24;
@@ -967,8 +967,12 @@ var mspHelper = (function (gui) {
                 chunk_seq: 0
                 id: 0
                 */
+
+                        // drop everything including and after the first null byte.
+                        var _message = mavmsg.text.replace(/\0.*$/g,'');
+                        console.log(_message);
             
-                // buzz todo
+                // buzz todo show it in the gui..
                 break; 
 
                 
