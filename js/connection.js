@@ -36,7 +36,9 @@ var connection = {
         }else if (testUrlUDP) {
             self.connectTcporUdp(testUrlUDP[1], testUrlUDP[2], options, callback,'udp');
         } else {
-            self.connectSerial(path, options, callback);
+//            self.connectSerial(path, options, callback);
+              self.connectTcporUdp('localhost', path, options, callback,'serial');
+
         }
     },
     connectSerial: function (path, options, callback) {
@@ -150,7 +152,7 @@ var connection = {
 
                 console.log('SERIAL: Connection opened with ID: ' + connectionInfo.connectionId + ', Baud: ' + connectionInfo.bitrate);
 
-                if (callback) callback(connectionInfo);
+                if (callback) callback(connectionInfo); // calls onOpen
             } else if (connectionInfo && self.openCanceled) {
                 // connection opened, but this connect sequence was canceled
                 // we will disconnect without triggering any callbacks
@@ -185,8 +187,8 @@ var connection = {
         var self = this;
         self.openRequested = true;
         self.connectionIP = ip;
-        self.connectionPort = port || 2323;
-        self.connectionPort = parseInt(self.connectionPort);
+        self.connectionPort = port ; // might be a string when doing serial.
+        //self.connectionPort = parseInt(self.connectionPort);
         self.connectionType = nettype;//'udp';
         self.logHead = 'connection.js: ';
 
@@ -231,7 +233,7 @@ var connection = {
 
 
 
-        self.onReceive.addListener(function log_bytesReceived(info) {
+        self.onReceive.addListener(function log_bytesReceived(info) { // log_bytesReceived is called during recieve trigger.
             self.bytesReceived += info.data.byteLength;
             //if (chrome.runtime.lastError) {
                 console.error('connectTcporUdp2', chrome.runtime.lastError.message);
@@ -275,7 +277,20 @@ var connection = {
 //          chrome.serial.disconnect(this.connectionId, function (result) {
             var disconnectFn = null;
             if (self.connectionType == 'serial') {
-                disconnectFn = chrome.serial.disconnect ;
+
+                // send info to the backend to disconnect from tcp?  todo?
+                var msg = JSON.stringify({ 'disconnectNode': true, 'ip': self.connectionIP , 'port': self.connectionPort , 'type':self.connectionType }); //self.connectionType= 'serial'
+                window.opener.postMessage(msg, "*");
+                self.connectionId = false;
+                GUI.connected_to = false;
+                GUI.connecting_to = false;
+                CONFIGURATOR.connectionValid = false;
+                console.log("SERIAL DIS-CONNECTED!");
+                onClosed();
+                CONFIG=undefined;
+
+                return;
+                //disconnectFn = chrome.serial.disconnect ;
             }
             if (self.connectionType == 'tcp') {
 
@@ -286,7 +301,7 @@ var connection = {
                 GUI.connected_to = false;
                 GUI.connecting_to = false;
                 CONFIGURATOR.connectionValid = false;
-                console.log("NET DIS-CONNECTED!");
+                console.log("TCP DIS-CONNECTED!");
                 onClosed();
                 CONFIG=undefined;
 
@@ -302,7 +317,7 @@ var connection = {
                 GUI.connected_to = false;
                 GUI.connecting_to = false;
                 CONFIGURATOR.connectionValid = false;
-                console.log("NET DIS-CONNECTED!");
+                console.log("UDP DIS-CONNECTED!");
                 onClosed();
                 CONFIG=undefined;
 
@@ -381,7 +396,7 @@ var connection = {
 
             var sendFn = null;
             if (self.connectionType == 'serial') { 
-                sendFn=chrome.serial.send;
+                sendFn=null;//chrome.serial.send;
             }
             if (self.connectionType == 'tcp') { 
                 sendFn=null;//chrome.sockets.tcp.send;
@@ -396,9 +411,10 @@ var connection = {
             // non-binary
             if (typeof sendFn === "function") { 
                 // safe to use the function
-           
-                sendFn(self.connectionId, data, function (sendInfo) {
-                    // tcp send error
+           //chrome.serial.send
+           chrome.serial.send(self.connectionId, data, function (sendInfo) {
+            //sendFn(self.connectionId, data, function (sendInfo) {
+                // tcp send error
 
                     
                     
@@ -465,10 +481,12 @@ var connection = {
         if (!this.transmitting) {
             this.transmitting = true;
             try {
-            send();
+            send(); // calls the local 'function send()' defined above.
             }catch (e) {
                 console.log('cant send riught now, transitional');
             } 
+        } else {
+            let x = 1 ;
         }
     },
     onReceive: {
@@ -476,17 +494,17 @@ var connection = {
 
         addListener: function (function_reference) {
             var chromeType = null;
-            if (connection.connectionType == 'serial')  chromeType = chrome.serial;
+            //if (connection.connectionType == 'serial')  chromeType = chrome.serial;
             //if (connection.connectionType == 'tcp')  chromeType = chrome.sockets.tcp;
             //if (connection.connectionType == 'udp')  chromeType = chrome.sockets.udp;
             if (!chromeType) return;
 
-            chromeType.onReceive.addListener(function_reference);
+            chromeType.onReceive.addListener(function_reference); // this adds log_bytesReceived() to the listners, and read_serial 
             this.listeners.push(function_reference);
         },
         removeListener: function (function_reference) {
             var chromeType = null;
-            if (connection.connectionType == 'serial')  chromeType = chrome.serial;
+            //if (connection.connectionType == 'serial')  chromeType = chrome.serial;
             //if (connection.connectionType == 'tcp')  chromeType = chrome.sockets.tcp;
             //if (connection.connectionType == 'udp')  chromeType = chrome.sockets.udp;
             if (!chromeType) return;
@@ -506,7 +524,7 @@ var connection = {
 
         addListener: function (function_reference) {
             var chromeType = null;
-            if (connection.connectionType == 'serial')  chromeType = chrome.serial;
+            //if (connection.connectionType == 'serial')  chromeType = chrome.serial;
             //if (connection.connectionType == 'tcp')  chromeType = chrome.sockets.tcp;
             //if (connection.connectionType == 'udp')  chromeType = chrome.sockets.udp;
             if (!chromeType) return;
@@ -516,7 +534,7 @@ var connection = {
         },
         removeListener: function (function_reference) {
         var chromeType = null;
-        if (connection.connectionType == 'serial')  chromeType = chrome.serial;
+        //if (connection.connectionType == 'serial')  chromeType = chrome.serial;
         //if (connection.connectionType == 'tcp')  chromeType = chrome.sockets.tcp;
         //if (connection.connectionType == 'udp')  chromeType = chrome.sockets.udp;
         if (!chromeType) return;

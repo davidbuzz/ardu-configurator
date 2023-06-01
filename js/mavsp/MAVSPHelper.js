@@ -37,47 +37,48 @@ frontend_generic_link_sender = function(mavmsg,sysid) {
     var buf = mavmsg.pack(this);  //Buffer.   this .pack is improtant, it must be done prior to json goodness below
 
     //AFTER .pack()...
-    if (connection.connectionType != 'serial') {
+    //if (connection.connectionType != 'serial') {
         var msgstr = JSON.stringify(mavmsg); 
         //console.log("zZZZZZZZZZZZZZZZZZZ",msgstr,mavmsg)
         var sendMAVpkt = { 'sendMAV': true, 'pkt': msgstr , 'sysid': sysid};
         var msg = JSON.stringify(sendMAVpkt); 
         window.opener.postMessage(msg, "*");
-    }
+    //}
     //console.log(frontend_generic_link_sender.caller);
 
+    console.log('front send-->',mavmsg);
 
     // the below-block is now for serial type devices in the frontend
-    if (connection.connectionType == 'serial') {
+    // if (connection.connectionType == 'serial') {
 
-        var abuf = toArrayBuffer(buf); // ArrayBuffer
-        //this.write( buf ); // already open, we hope
+    //     var abuf = toArrayBuffer(buf); // ArrayBuffer
+    //     //this.write( buf ); // already open, we hope
 
-        var message = new MspMessageClass();
-            message.code = mavmsg._id;//code
-            message.name = mavmsg._name;
-            message.messageBody = abuf;
-            message.onSend  = function (sendInfo) {  
+    //     var message = new MspMessageClass();
+    //         message.code = mavmsg._id;//code
+    //         message.name = mavmsg._name;
+    //         message.messageBody = abuf;
+    //         message.onSend  = function (sendInfo) {  
 
-                if ( mavmsg._name != "HEARTBEAT") {
-                    //console.log("msg sent! "+message.name); brief
-                    console.log("sending-->");/*console.log(message);*/console.log(mavmsg);  //verbose
-                }
+    //             if ( mavmsg._name != "HEARTBEAT") {
+    //                 //console.log("msg sent! "+message.name); brief
+    //                 console.log("sending-->");/*console.log(message);*/console.log(mavmsg);  //verbose
+    //             }
 
-                //console.log(message.caller);
+    //             //console.log(message.caller);
 
-                // after a successful send, stop the timeout counter 
-                MSP.removeCallback(message.code);
-                //clearTimeout(this.timer);
+    //             // after a successful send, stop the timeout counter 
+    //             MSP.removeCallback(message.code);
+    //             //clearTimeout(this.timer);
 
-            }
-            message.onFinish  = function (sendInfo) {  
-                publicScope.freeSoftLock(); 
-            }
+    //         }
+    //         message.onFinish  = function (sendInfo) {  
+    //             publicScope.freeSoftLock(); 
+    //         }
 
-        helper.mspQueue.put(message);
+    //     helper.mspQueue.put(message);
 
-    }
+    // }
 
 
     // this is really just part of the original send()
@@ -348,6 +349,11 @@ var mspHelper = (function (gui) {
             //console.log("not connected yet, no CONFIG");
             return;
         }
+
+        // log non-streaming msgs, don't do statustext here, we do it elsewhere 
+        // if ( ! ['heartbeat','timesync','statustext','global_position_int','rc_channels','aoa_ssa','aoa_soa','attitude','sys_status','power_status','mission_current','servo_output_raw','system_time','ahrs','wind','terrain_report','ekf_status_report','battery_status','gps_raw_int','vibration','scaled_pressure','scaled_imu2','raw_imu','meminfo','vfr_hud'].includes((mavmsg._name).toLowerCase()) )
+        console.log('recieving-->',mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
+
 
         // packet-specific stuff
         switch (mavmsg._id ) {

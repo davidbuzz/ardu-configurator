@@ -61,25 +61,30 @@ var mavParserObj = mpo;
 
 // this function takes INCOMING tcp/udp mavlink in Node backend server (smartlinks.js), and forwards them to the GUI thread.
 // Attach an event handler for any valid MAVLink message , this allows us to capture parsed mavlink packets and forward htem to the 'frontend'
-var generic_message_handler = function(message) {
+var generic_message_handler = function(mavmsg) {
 
     // don't dissplay or handle parsing errors -  ie Bad prefix errors, but allow signing errors thru
-    if ((message._id == -1 ) && (message._reason != 'Invalid signature') ) { return;}
+    if ((mavmsg._id == -1 ) && (mavmsg._reason != 'Invalid signature') ) { return;}
 
     // for packets arriving in from a --out target, their target sysid is NOT us...
-    //if (message.target_system < 250 ) { /*console.log('--out sending:',message._name); */ mpo.send(message);   } 
+    //if (mavmsg.target_system < 250 ) { /*console.log('--out sending:',mavmsg._name); */ mpo.send(mavmsg);   } 
 
     if (! newWindow) return;// don't try to post to new window till its real.
     
+    console.log('backend recieved msg, routing to GUI',mavmsg);
+
+    if (['COMMAND_ACK'].includes(mavmsg._name)) {
+      console.log(`COMMAND_ACK command= ${mavmsg.command} result= ${mavmsg.result} `);
+    }
 
     // push packed into GUI part of the application.... through "postMessage()"   the GUI/frontend app recieves it in main.js window.addEventListener
-    //console.log("eep",JSON.stringify(message));
+    //console.log("eep",JSON.stringify(mavmsg));
     try {
-    newWindow.window.postMessage(JSON.stringify({ 'udpmavlink': true, 'pkt':message }), "*"); //the second parameter specifies the message origin. afaik, this is merely a string and has no effect beyond being there
+    newWindow.window.postMessage(JSON.stringify({ 'udpmavlink': true, 'pkt':mavmsg }), "*"); //the second parameter specifies the message origin. afaik, this is merely a string and has no effect beyond being there
     } catch (error) {     // if window gets closed, we'll treat it as time to exit as well.
       console.error(error);
 
-      if ( error.message.startsWith('No window with id') ) {
+      if ( error.mavmsg.startsWith('No window with id') ) {
         process.exit();
       }
       // expected output: ReferenceError: nonExistentFunction is not defined
@@ -106,19 +111,24 @@ window.addEventListener('message', function(event) {
 
       //'connectTcporUdp': true, 'ip': $ip , 'port': $port 
       var ip = data.ip;
-      var port = data.port;
+      var port = data.port; // serial type defines 'this', but NOT ip, tcp/udp define both
       var type = data.type;
 
       console.log("GOT msg from frontend!!!!!!!!!!!!!",event,ip,port,type);
 
       if ( type == 'udp') {
-        mpo.add_link('udpin:'+ip+':'+port,false); // eg 'udpin:0.0.0.0:14550'
+        mpo.add_link('udpin:'+ip+':'+port); // eg 'udpin:0.0.0.0:14550'
       }
       // if ( type == 'udpout') {
       //   mpo.add_link('udpout:'+ip+':'+port); // eg 'udpin:0.0.0.0:14550'
       // }
       if ( type == 'tcp') {
         mpo.add_link('tcp:'+ip+':'+port);   //eg 'tcp:localhost:5760'
+      }
+
+      // arrives as serial:localhost:/dev/xxx leaves as serial:/dev/ttyxxx
+      if ( type == 'serial') {
+        mpo.add_link('serial:'+port);   //eg 'serial:/dev/ttyACM0' is how smartlinks.js expects it
       }
   }
    if ( data.disconnectNode) {
@@ -147,7 +157,7 @@ window.addEventListener('message', function(event) {
 
 });
 
-// // Attach the event handler for any valid MAVLink message in either stream, its agnostic at this stage
+// // Attach the event handler for any valid INCOMING MAVLink message in any stream, its agnostic at this stage - this is for ARRIVING mavlink to Node, from the serial/tcp/udp where the drone is.
 mavParserObj.on('message', generic_message_handler);
 
 

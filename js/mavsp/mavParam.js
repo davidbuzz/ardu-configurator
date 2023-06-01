@@ -51,7 +51,7 @@ MavParam.prototype.show_fetched_params = function (pattern) {
     }
 }
 
-var param_retry_delay = 1000; // global var
+var param_retry_delay = 5000; // global var
 
 // Function that globallby binds to parameter-managing events and handles them as required
 function paramHandler(msg) {
@@ -153,12 +153,12 @@ MavParam.prototype.set = function(name, value, retries) {
     // Establish a handler to try and send the required packet every second until cancelled
     senderHandler[name] = setInterval( function() {
         //console.log('Requesting parameter ['+name+'] be set to ['+value+']...');
-        mavlinkParser.send(param_set);
+        mavlinkParser.send(param_set);// really just queue'd to be sent
     }, param_retry_delay);
 
     timeoutWatcher[name] = setTimeout(function() {
         clearInterval(senderHandler[name]);
-        console.log("cleared interval.."+name);
+        console.log("cleared interval.."+name+'retries:'+retries+'param_retry_delay:'+param_retry_delay);
         if(pendingAcks[name]) {
             console.log("ACKS were pending. "+name+" "+pendingAcks[name]);
             delete pendingAcks[name];

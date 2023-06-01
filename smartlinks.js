@@ -67,6 +67,9 @@ close_all_outs = function() {
     out_list = [];
 }
 
+// if u are looking for where RECIEVED packets are haandled after being parsed, they are 'emit'-ed as objects into
+// generic_message_handler() in pre-startup.js which then routes them to the frontend GUI
+
 // create the output hooks for the parser/s
 // we overwrite the default send() instead of overwriting write() or using setConnection(), which don't know the ip or port info.
 // and we accept ip/port either as part of the mavmsg object, or as a sysid in the OPTIONAL 2nd parameter
@@ -84,6 +87,8 @@ backend_generic_link_sender = function(mavmsg,sysid) {
     // mtype = "OUT";
     // if (mavmsg.fromfrontend ) mtype = "FRONT";
     // console.log(mtype,mavmsg,sysid);
+
+    console.log('back send-->',mavmsg);
 
 
     // a pretty dumb solution here to try to send it out all active uplinks that are reporting is_connected()
@@ -266,7 +271,7 @@ class SmartSerialLink extends SerialPort {
               console.log("found mavlink2 header-serial");
               this.mavlinktype = 2;
             }
-            packetlist = mpo.parseBuffer(msg); // emits msgs
+            packetlist = mpo.parseBuffer(msg); // emits msgs to 
             // filter the packets
             function isGood(element, index, array) {
             return element._id != -1;
@@ -336,7 +341,7 @@ class SmartSerialLink extends SerialPort {
             // don't report same error more than 1hz..
             if (this.last_error != error.toString()) {
               this.last_error = error.toString();
-              console.log('[SerialPort] ' + error + " - retrying...");
+              console.log('[SerialPort] ' , error , " - retrying...");
             }
 
             // re-instantiate whole object, with autoopen

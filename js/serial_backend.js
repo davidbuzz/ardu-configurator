@@ -459,7 +459,7 @@ function read_tcp_udp(msg) {
 
     // this.streamrate is pretty arbitrary here, but its what we used in the serial links too
     if (this.streamrate == undefined) {
-        console.log("got incoming tcp/udp , sending heartbeat and starting param read")
+        console.log("got incoming ser/tcp/udp , sending heartbeat and starting param read")
         send_heartbeat_handler(); // throw a heartbeat first, blindly?
         //set_stream_rates(4,goodpackets[0]._header.srcSystem,goodpackets[0]._header.srcComponent); 
         this.streamrate = 4; 
@@ -470,7 +470,7 @@ function read_tcp_udp(msg) {
     // some form of valid mavlink means we can consider ourselves connected as far as the GUI is concerned
     if (CONFIG && (CONFIGURATOR.connectionValid == false) && (is_networking_connected==0) ) {
         //is_networking_connected = 1;
-        console.log("NET CONNECTED!");
+        console.log("SER/NET CONNECTED!");
         CONFIGURATOR.connectionValid = true;
         CONFIG.flightControllerVersion = "0.0.0"; // buss hack to enable PID pidCount in serial_backend.js 
         updateFirmwareVersion();// show on-gui top-lef
