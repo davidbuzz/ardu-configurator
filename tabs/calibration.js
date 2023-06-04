@@ -32,7 +32,7 @@ TABS.calibration.show_hide_steps = function (sh) {
 TABS.calibration.initialize = function (callback) {
 
     //var loadChainer = new MSPChainerClass();
-    var saveChainer = new MSPChainerClass();//,
+    //var saveChainer = new MSPChainerClass();//,
         //modalStart,
         //modalStop,
         //modalProcessing;
@@ -50,11 +50,11 @@ TABS.calibration.initialize = function (callback) {
     // loadChainer.execute();
     loadHtml();
 
-    saveChainer.setChain([
-        mspHelper.saveCalibrationData,
-        mspHelper.saveToEeprom
-    ]);
-    saveChainer.setExitPoint(reboot);
+    // saveChainer.setChain([
+    //     mspHelper.saveCalibrationData,
+    //     mspHelper.saveToEeprom
+    // ]);
+    // saveChainer.setExitPoint(reboot);
 
     var show_steps = false;
     var start_calib = false;
