@@ -351,7 +351,7 @@ var mspHelper = (function (gui) {
         }
 
         // log non-streaming msgs, don't do statustext here, we do it elsewhere 
-        // if ( ! ['heartbeat','timesync','statustext','global_position_int','rc_channels','aoa_ssa','aoa_soa','attitude','sys_status','power_status','mission_current','servo_output_raw','system_time','ahrs','wind','terrain_report','ekf_status_report','battery_status','gps_raw_int','vibration','scaled_pressure','scaled_imu2','raw_imu','meminfo','vfr_hud'].includes((mavmsg._name).toLowerCase()) )
+         if ( ! ['heartbeat', 'param_value','timesync','statustext','global_position_int','rc_channels','aoa_ssa','aoa_soa','attitude','sys_status','power_status','mission_current','servo_output_raw','system_time','ahrs','wind','terrain_report','ekf_status_report','battery_status','gps_raw_int','vibration','scaled_pressure','scaled_imu2','raw_imu','meminfo','vfr_hud'].includes((mavmsg._name).toLowerCase()) )
         console.log('recieving-->',mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
 
 

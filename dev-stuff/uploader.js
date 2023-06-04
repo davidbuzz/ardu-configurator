@@ -1,6 +1,6 @@
 
 // node:
-const pako = require('pako');
+const pako = require('pako'); //for zlib
 
 // this is a non-working "cross-port" of uploader.py from ardupilot into javascipr, and it's laid out very similar, and is pretty close.
 // i gave up on this in favour of the file called apj.js , which is kinda derived from stm32.js but made to talk to an apj bootloader.
