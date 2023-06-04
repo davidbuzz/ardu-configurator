@@ -146,6 +146,10 @@ $(document).ready( function () {
             this.hide(); // Pretend to be closed already
             console.log("We're closing...");
             this.close(true);
+            // *really* reload entire app.. [ this restarts node backend as well]
+            //chrome.runtime.reload();
+            process.exit();// exit this Node backend, for real.
+
         });
     } else {
         console.log('Not load require');
