@@ -181,23 +181,28 @@ var set_stream_rates = function(rate,target_system,target_component) {
     //console.log('Set Stream Rates =4');
 }
 
+const { EventEmitter } = require('events');
 
 
-class SmartSerialLink extends SerialPort {
+//  deliberately does not inherit from node SerialPort, uses EventEmitter instead.
+// because when SerialPort is closed, it stop emitting stuff, and doesn't start again till u re-open.
+class SmartSerialLink extends EventEmitter {
 
     constructor (path, is_output) {
 
-        super(path, { baudRate: 115200, autoOpen: true });
-        //this = new SerialPort(path, { baudRate: 115200, autoOpen: true });// its actually a promise till opened
-
+        super();
         this.__path=path;
+        this.serialPort = new SerialPort(this.__path, { baudRate: 115200, autoOpen: true });// its actually a promise till opened
+
         this.smarttype = 'serial'; // needs to match the 'type': xxxx in sysid_to_ip_address
         this.last_error = undefined;
         this.mavlinktype = undefined;
         this.streamrate = undefined;
         this.is_output = is_output;
 
-        this.ISSERIALCONNECTED = false;
+        this.ISSERIALCONNECTED = false; // is serial ACTUALLY connected?
+
+        this.reconnecting = false; // is serial *REQUESTED* to be connected? [ie retry till connected]
 
         console.log('[SerialPort] initialised.\n');
 
@@ -206,30 +211,67 @@ class SmartSerialLink extends SerialPort {
 
     }
 
+        // Constructing a SerialPort object immediately opens a port, so it does'nt really have an 'open' call , normally.
+    //open() {
+
+    //}
+
+    retry() {
+
+        this.reconnecting = true;
+
+        try {
+
+        // re-instantiate whole object, with autoopen
+        this.serialPort = new SerialPort(this.__path, { baudRate: 115200, autoOpen: true });// its actually a promise till opened
+
+        // on a newly opened port with no issues, re-add its events..
+        this.eventsetup();
+
+        this.reconnecting = false;// only if it went ok.
+
+
+        //this.open(); // attempt, WRN, if u just call open() you get window.open
+        } catch (error) {
+            //console.error(error);
+            console.log('retry filed, retrying...',error);
+            // try again after a delay
+            let retry_delay = 2000;// ms
+            setTimeout(this.retry, retry_delay);
+            this.reconnecting = true;
+        }
+
+    }
+
     is_connected() { return this.ISSERIALCONNECTED; }
 
+    // because the normal method of disconnecting is a 'close_all_links()' call, which 
+    // calls destroy() this does not enable re-connecting.
     destroy () {
-        this.close(); //
+        this.reconnecting = false;
         this.ISSERIALCONNECTED = false; 
+        this.serialPort.close(); //this triggers  a 'disconnect' event even when user asked for it in GUI, or if they didn't.
     }
 
     // serials are sent with the write()
     ZZsend(data) {
-        this.write( data ); // already open, we hope
+        this.serialPort.write( data ); // already open, we hope
     }
     //https://serialport.io/docs/api-stream reference
 
     eventsetup() {
 
-        this.on('open',function(){
+        var ttt = this; // for use inside serial callbacks
 
-          this.ISSERIALCONNECTED = true; 
+        this.serialPort.on('open',function(){
+
+            ttt.ISSERIALCONNECTED = true; 
 
           console.log('Serial: connection opening...');
 
           // serial, not ip, fake the ip, and use path instead of port
           // we know we can reply here, even without knowing the sysid...
-          broadcast_ip_address = {'ip':'127.0.0.1', 'port':this.__path, 'type':'serial' }; 
+          broadcast_ip_address = {'ip':'127.0.0.1', 'port':ttt.__path, 'type':'serial' }; 
           send_heartbeat_handler(); // doesnt know sysid, heartbeat is ok, as its a broadcast, so 255
 
           // writing data to server
@@ -237,12 +279,10 @@ class SmartSerialLink extends SerialPort {
 
         });
 
-        // uncomment to dump mavlink to screen
-        //this.on('data', line => console.log(`> ${line}`))
 
-        this.on('data',function(msg){
+        this.serialPort.on('data',function(msg){
 
-            if (this.is_output === undefined ) generic_out_sender(msg); // also forward the packet to all --outputs
+            if (ttt.is_output === undefined ) generic_out_sender(msg); // also forward the packet to all --outputs
 
             var bread = this.bytesRead;
             var bwrite = this.bytesWritten;
@@ -250,7 +290,7 @@ class SmartSerialLink extends SerialPort {
             //console.log('[SerialPort] Bytes written : ' + bwrite);
             //console.log('[SerialPort] Data sent FROM serial : ' + data);
 
-            //console.log("SER:",this.is_output,msg); //msg is a Buffer
+            //console.log("SER:",ttt.is_output,msg); //msg is a Buffer
 
             //echo data
             //var is_kernel_buffer_full = this.write('Data ::' + msg);
@@ -263,13 +303,13 @@ class SmartSerialLink extends SerialPort {
            // var array_of_chars = Uint8Array.from(msg) // from Buffer to byte array
             var packetlist = [];
 
-            if ( (this.mavlinktype == undefined) && msg.includes(254) ) { //fe
+            if ( (ttt.mavlinktype == undefined) && msg.includes(254) ) { //fe
             console.log("might be mavlink1..?");
             }
 
-            if ( (this.mavlinktype == undefined) && msg.includes(253) ) { //fd
+            if ( (ttt.mavlinktype == undefined) && msg.includes(253) ) { //fd
               console.log("found mavlink2 header-serial");
-              this.mavlinktype = 2;
+              ttt.mavlinktype = 2;
             }
             packetlist = mpo.parseBuffer(msg); // emits msgs to 
             // filter the packets
@@ -283,15 +323,15 @@ class SmartSerialLink extends SerialPort {
 
             // remote end doesnt know were mavlink2, send em a mavlink2 packet...
             if ( goodpackets.length == 0 ) {
-                this.heartbeat()
+                ttt.heartbeat()
                 //set_stream_rates(4);// no target sys or comp, guess?
             }
 
             if (goodpackets[0] == undefined ) return;
 
-            if (this.streamrate == undefined) {
+            if (ttt.streamrate == undefined) {
                 //set_stream_rates(4,goodpackets[0]._header.srcSystem,goodpackets[0]._header.srcComponent); 
-                this.streamrate = 4; 
+                ttt.streamrate = 4; 
             }
 
             var rinfo = { address: '127.0.0.1',  port: '/dev/ttyUSB0' }
@@ -301,62 +341,65 @@ class SmartSerialLink extends SerialPort {
         });
 
 
-        this.on('drain',function(){
+        this.serialPort.on('drain',function(){
           //console.log('[SerialPort] write buffer is empty now .. u can resume the writable stream');
-          this.resume();
+          this.resume(); // 'this' refers to internal serialPort obj, not SmartSerialLink.
         });
 
-        this.on('disconnect',function(){
+        // when the hardware goes away, this event is called, and THEN .close is called right after.
+        // unless destroy() bought us here, we consider this an accident,and try to reconnect if the hardware come back.. like a .error
+        this.serialPort.on('disconnect',function(){
           console.log('[SerialPort] disconnect event');
+          //ttt.ISSERIALCONNECTED = false;
+          if (( ttt.ISSERIALCONNECTED == false ) && (ttt.reconnecting == false)) return;// user triggered via destroy()
+          ttt.retry();// not user triggered
         });
 
         // called when a previously valid thing was unplugged...
-        this.on('close',function(){
-        //console.log('[SerialPort] close event');
+        // or when a user disconnects in the GUI, and it does NOT need to go into a a reconnect loop like the 'error' below.
+        this.serialPort.on('close',function(){
+            console.log('[SerialPort] close event');
 
-            this.last_error = undefined;
-            this.mavlinktype = undefined;
-            this.streamrate = undefined;
+            ttt.last_error = undefined;
+            ttt.mavlinktype = undefined;
+            ttt.streamrate = undefined;
+            ttt.ISSERIALCONNECTED = false; 
 
             // we'll treat a close/unplug as an error, both of which need a re-detect loop
-            this.emit('error', 'serialport not readable');
+            //this.emit('error', 'serialport not readable');
 
         });
 
 
-        this.on('error',function(error){
+        this.serialPort.on('error',function(error){
             //console.log('[SerialPort] error event');
-            if (this.ISUDPINCONNECTED)  {  
+            if (ttt.ISUDPINCONNECTED)  {  
                 return;
             }
-            if (this.ISUDPOUTCONNECTED)  {  
+            if (ttt.ISUDPOUTCONNECTED)  {  
                 return;
             }
-            if (this.ISTCPCONNECTED)  {  
+            if (ttt.ISTCPCONNECTED)  {  
                 //console.log("using incoming SERIAL data, stopped retries on TCP");    
                 return;
             }
-            this.ISSERIALCONNECTED = false; 
+            ttt.ISSERIALCONNECTED = false; 
 
             // don't report same error more than 1hz..
-            if (this.last_error != error.toString()) {
-              this.last_error = error.toString();
+            if (ttt.last_error != error.toString()) {
+              ttt.last_error = error.toString();
               console.log('[SerialPort] ' , error , " - retrying...");
             }
 
-            // re-instantiate whole object, with autoopen
-            //this = new SerialPort(path, { baudRate: 115200, autoOpen: true });// its actually a promise till opened
-
-             this.open();
+           ttt.retry();
 
         });
 
       // serial-specific
-     var ttt = this;
      this.heartbeat_interval = setInterval(function(){ // cant use 'this' inside this call, we're talking to the instance.
           ttt.heartbeat(); // types '>' on console 
           ttt.last_error = undefined;
-          if (this.ISSERIALCONNECTED ) show_stream_rates('serial',3)
+          if (ttt.ISSERIALCONNECTED ) show_stream_rates('serial',3)
         },1000);
 
   }
