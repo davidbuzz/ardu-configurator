@@ -321,11 +321,11 @@ function onOpen(openInfo) {
         chrome.storage.local.set({tcp_connect_enabled: $('#tcp-networking').is(":checked")});
         chrome.storage.local.set({udp_connect_enabled: $('#udp-networking').is(":checked")});
 
-        if (openInfo.ip !== undefined) {
-          //connection.onReceive.addListener(read_tcp_udp); done elsewhere with mavParserObj.on('message', read_tcp_udp);
-        } else { // serial
-          connection.onReceive.addListener(read_serial);
-        }
+        //if (openInfo.ip !== undefined) {
+          //connection.onReceive.addListener(read_tcp_udp); done elsewhere see read_backend_serial_tcp_udp
+        //} else { // serial
+        //  connection.onReceive.addListener(read_serial);
+        //}
 
         // disconnect after 10 seconds with error if we don't get IDENT data
         helper.timeout.add('connecting', function () {
@@ -449,18 +449,20 @@ function onClosed(result) {
 // 2 means was-connected
 var is_networking_connected = 0;
 
-// a cut-down bit from MSP.read() for tcp/udp conneciton startup/success
-// this gets called on every incoming tcp/udp packet wether we are ready for it or not.
-function read_tcp_udp(msg) {
+// a cut-down bit from MSP.read() for serial/tcp/udp conneciton startup/success
+// this gets called on every incoming serial/tcp/udp packet wether we are ready for it or not.
+function read_backend_serial_tcp_udp(msg) {
 
     // this function gets (unfortuntely) triggered on serial and tcp, so this next line ignores the serial stuff....
     // ... for serial link/s we do similar param-fetch and set-stream-rates stuff with read_serial calling MSP.read, but only when the serial is 'conected'.
-    if ( !msg.udpmavlink ) return; 
+    //if ( !msg.udpmavlink ) return;  - we let serial thru here too now...
+
+    mspHelper.processDataMav(msg); // make sure the data gets to where its really handled.
 
     // this.streamrate is pretty arbitrary here, but its what we used in the serial links too
     if (this.streamrate == undefined) {
         console.log("got incoming ser/tcp/udp , sending heartbeat and starting param read")
-        send_heartbeat_handler(); // throw a heartbeat first, blindly?
+        send_heartbeat_handler(); // throw a heartbeat first, blindly, which is unneeded as the backend 'smartlinks.js' also does, but harmless
         //set_stream_rates(4,goodpackets[0]._header.srcSystem,goodpackets[0]._header.srcComponent); 
         this.streamrate = 4; 
         ParamsObj.getAll(); // todo delay this? - this immediately starts param fetch
@@ -486,10 +488,10 @@ function read_tcp_udp(msg) {
 }
 
 // for historical reasons, its called MSP.read
-function read_serial(info) {
+// function read_serial(info) {
 
-        MSP.read(info);
-}
+//         MSP.read(info);
+// }
 
 /**
  * Sensor handler used in ARDUPILOT >= 1.5

@@ -67,8 +67,8 @@ close_all_outs = function() {
     out_list = [];
 }
 
-// if u are looking for where RECIEVED packets are haandled after being parsed, they are 'emit'-ed as objects into
-// generic_message_handler() in pre-startup.js which then routes them to the frontend GUI
+// if u are looking for where RECIEVED packets are handled after being parsed, they are 'emit'-ed as objects into
+// backend_generic_message_handler() in pre-startup.js which then routes them to the frontend GUI
 
 // create the output hooks for the parser/s
 // we overwrite the default send() instead of overwriting write() or using setConnection(), which don't know the ip or port info.

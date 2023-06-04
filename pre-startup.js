@@ -60,7 +60,7 @@ var mavParserObj = mpo;
 
 // this function takes INCOMING tcp/udp mavlink in Node backend server (smartlinks.js), and forwards them to the GUI thread.
 // Attach an event handler for any valid MAVLink message , this allows us to capture parsed mavlink packets and forward htem to the 'frontend'
-var generic_message_handler = function(mavmsg) {
+var backend_generic_message_handler = function(mavmsg) {
 
     // don't dissplay or handle parsing errors -  ie Bad prefix errors, but allow signing errors thru
     if ((mavmsg._id == -1 ) && (mavmsg._reason != 'Invalid signature') ) { return;}
@@ -97,6 +97,7 @@ var generic_message_handler = function(mavmsg) {
 // 2st type is a 'sendMAV' message that the gui sends to say "this is a mavlink packet that needs sending to tcp/udp outgoing"
 // 3st type is a 'disconnectNode' message that the gui sends to say "close this tcp/udp connection"
 
+// backend listener
 window.addEventListener('message', function(event) {
   // ignore 'false' silently
   if (event.data == false) return;
@@ -157,6 +158,6 @@ window.addEventListener('message', function(event) {
 });
 
 // // Attach the event handler for any valid INCOMING MAVLink message in any stream, its agnostic at this stage - this is for ARRIVING mavlink to Node, from the serial/tcp/udp where the drone is.
-mavParserObj.on('message', generic_message_handler);
+mavParserObj.on('message', backend_generic_message_handler);
 
 

@@ -637,14 +637,14 @@ var MSP = {
 
 
     //we get all INCOMING packets thru here, 
-    _dispatch_message_mav: function(pkt) {
+    // _dispatch_message_mav: function(pkt) {
 
-        // this function gets (unfortuntely) triggered on serial and tcp, so this next line ignores the udp stuff....
-        // ... for udp link/s we do similar param-fetch and set-stream-rates stuff with read_tcp_udp for udp link/s. 
-        if ( pkt.udpmavlink ) return; 
+    //     // this function gets (unfortuntely) triggered on serial and tcp, so this next line ignores the udp stuff....
+    //     // ... for udp link/s we do similar param-fetch and set-stream-rates stuff with read_tcp_udp for udp link/s. 
+    //     //if ( pkt.udpmavlink ) return; 
 
-        mspHelper.processDataMav(pkt);
-    },
+    //     mspHelper.processDataMav(pkt); - no longer used.
+    // },
 
     /**
      * @param {MSP} mspData
@@ -776,10 +776,8 @@ var MSP = {
 
 // generic msg handler
 mavParserObj.on('message', generic_message_handler);
-// serial:
-mavParserObj.on('message', MSP._dispatch_message_mav);
-// tcp/udp:
-mavParserObj.on('message', read_tcp_udp);
+// serial/tcp/udp:
+mavParserObj.on('message', read_backend_serial_tcp_udp);
 
 
 MSP.SDCARD_STATE_NOT_PRESENT = 0;

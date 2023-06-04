@@ -20,7 +20,7 @@ let globalSettings = {
 };
 
 
-// this event listner's job is to get mavlink UDP stream from Node backend and pass it throgh to frontend/gui
+// this frotn-end event listener's job is to get mavlink UDP stream from Node backend and pass it throgh to frontend/gui
 window.addEventListener('message', function(event) {
     // ignore 'false' silently
     if (event.data == false) return;
@@ -51,7 +51,7 @@ window.addEventListener('message', function(event) {
     if (data.udpmavlink) newpkt.udpmavlink = true;
     
     // we're "emit"-ing the packets here just like MAVLink20Processor.prototype.parseChar
-     // this is the FRONTEND generic_message_handler in js/mavsp.js
+     // this is TO the FRONTEND generic_message_handler in js/mavsp.js
     mpo.emit('message',newpkt); // this is the FRONTEND generic_message_handler in js/mavsp.js  - generic_message_handler(message);
     mpo.emit(newpkt._name,newpkt);// and the by-name re-emit of backend packet to frontend using MAVLink20Processor instance
 
