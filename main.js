@@ -116,12 +116,12 @@ $(document).ready( function () {
 
     if (typeof require !== "undefined") {
         // Load native UI library
-        var gui = require('nw.gui');
-        var win = gui.Window.get();
+        var nw = require('nw.gui');
+        var win = nw.Window.get();
 
         //Listen to the new window event
         win.on('new-win-policy', function (frame, url, policy) {
-            gui.Shell.openExternal(url);
+            nw.Shell.openExternal(url);
             policy.ignore();
         });
 

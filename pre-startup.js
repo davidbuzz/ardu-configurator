@@ -16,8 +16,7 @@
 // eg Node/NW globals:
 //process.versions['nw']
 // Load native UI library
-//var gui = require('nw.gui');
-//var win = gui.Window.get();
+var nw = require('nw.gui'); // nw.xxx is already in-scope without this, but this gives us  global reference to it.
 //var win = nw.Window.get();
 //var menu = new nw.Menu();
 
