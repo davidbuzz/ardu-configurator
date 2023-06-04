@@ -49,31 +49,31 @@ TABS.configuration.initialize = function (callback, scrollPosition) {
     // loadChainer.execute();
     load_html();
 
-    var saveChainer = new MSPChainerClass();
+    //var saveChainer = new MSPChainerClass();
 
-    var saveChain = [
-        mspHelper.saveBfConfig,
-        mspHelper.save3dConfig,
-        mspHelper.saveSensorAlignment,
-        mspHelper.saveAccTrim,
-        mspHelper.saveArmingConfig,
-        mspHelper.saveLooptimeConfig,
-        mspHelper.saveAdvancedConfig,
-        mspHelper.saveARDUPILOTPidConfig,
-        mspHelper.saveSensorConfig,
-        mspHelper.saveVTXConfig,
-        saveCraftName,
-        mspHelper.saveMiscV2,
-        saveSettings,
-        mspHelper.saveToEeprom
-    ];
+    // var saveChain = [
+    //     mspHelper.saveBfConfig,
+    //     mspHelper.save3dConfig,
+    //     mspHelper.saveSensorAlignment,
+    //     mspHelper.saveAccTrim,
+    //     mspHelper.saveArmingConfig,
+    //     mspHelper.saveLooptimeConfig,
+    //     mspHelper.saveAdvancedConfig,
+    //     mspHelper.saveARDUPILOTPidConfig,
+    //     mspHelper.saveSensorConfig,
+    //     mspHelper.saveVTXConfig,
+    //     saveCraftName,
+    //     mspHelper.saveMiscV2,
+    //     saveSettings,
+    //     mspHelper.saveToEeprom
+    // ];
 
     function saveSettings(onComplete) {
         Settings.saveInputs().then(onComplete);
     }
 
-    saveChainer.setChain(saveChain);
-    saveChainer.setExitPoint(reboot);
+   // saveChainer.setChain(saveChain);
+   // saveChainer.setExitPoint(reboot);
 
     function reboot() {
         //noinspection JSUnresolvedVariable
@@ -484,7 +484,7 @@ TABS.configuration.initialize = function (callback, scrollPosition) {
                 BF_CONFIG.board_align_yaw = Math.round(parseFloat($('input[name="board_align_yaw"]').val()) * 10);
                 BF_CONFIG.currentscale = parseInt($('#currentscale').val());
                 BF_CONFIG.currentoffset = Math.round(parseFloat($('#currentoffset').val()) * 10);
-                saveChainer.execute();
+                //saveChainer.execute();
             });
         });
 

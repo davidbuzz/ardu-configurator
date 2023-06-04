@@ -54,9 +54,9 @@ TABS.profiles = {};
 TABS.profiles.initialize = function (callback, scrollPosition) {
 
     var currentPreset,
-        currentPresetId,
-        loadChainer = new MSPChainerClass(),
-        saveChainer = new MSPChainerClass();
+        currentPresetId;//,
+        //loadChainer = new MSPChainerClass(),
+        //saveChainer = new MSPChainerClass();
 
     if (GUI.active_tab != 'profiles') {
         GUI.active_tab = 'profiles';
@@ -78,18 +78,18 @@ TABS.profiles.initialize = function (callback, scrollPosition) {
     // loadChainer.execute();
     loadHtml();
 
-    saveChainer.setChain([
-        mspHelper.saveBfConfig,
-        mspHelper.saveMixerConfig,
-        mspHelper.saveARDUPILOTPidConfig,
-        mspHelper.saveLooptimeConfig,
-        mspHelper.saveAdvancedConfig,
-        mspHelper.saveFilterConfig,
-        mspHelper.savePidData,
-        mspHelper.saveRcTuningData,
-        mspHelper.savePidAdvanced
-    ]);
-    saveChainer.setExitPoint(applySettings);
+    // saveChainer.setChain([
+    //     mspHelper.saveBfConfig,
+    //     mspHelper.saveMixerConfig,
+    //     mspHelper.saveARDUPILOTPidConfig,
+    //     mspHelper.saveLooptimeConfig,
+    //     mspHelper.saveAdvancedConfig,
+    //     mspHelper.saveFilterConfig,
+    //     mspHelper.savePidData,
+    //     mspHelper.saveRcTuningData,
+    //     mspHelper.savePidAdvanced
+    // ]);
+    // saveChainer.setExitPoint(applySettings);
 
     function loadHtml() {
         GUI.load("./tabs/profiles.html", processHtml);
@@ -142,7 +142,7 @@ TABS.profiles.initialize = function (callback, scrollPosition) {
             promises[key] = mspHelper.setSetting(name, value);
         });
         Promise.props(promises).then(function () {
-            saveChainer.execute();
+            //saveChainer.execute();
         });
     }
 

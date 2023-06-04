@@ -220,7 +220,7 @@ function buzz_veh_sels(prev_selection) {
 TABS.mixer.initialize = function (callback, scrollPosition) {
 
     //let loadChainer = new MSPChainerClass();
-    let saveChainer = new MSPChainerClass();
+    //let saveChainer = new MSPChainerClass();
     
     //let currentPlatform,
     //    currentMixerPreset,
@@ -248,13 +248,13 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
     // loadChainer.execute();
     loadHtml();
 
-    saveChainer.setChain([
-        mspHelper.saveMixerConfig,
-        mspHelper.sendServoMixer,
-        mspHelper.sendMotorMixer,
-        mspHelper.saveToEeprom
-    ]);
-    saveChainer.setExitPoint(reboot);
+    // saveChainer.setChain([
+    //     mspHelper.saveMixerConfig,
+    //     mspHelper.sendServoMixer,
+    //     mspHelper.sendMotorMixer,
+    //     mspHelper.saveToEeprom
+    // ]);
+    // saveChainer.setExitPoint(reboot);
 
     function reboot() {
         //noinspection JSUnresolvedVariable
@@ -471,7 +471,7 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
         SERVO_RULES.inflate();
         MOTOR_RULES.cleanup();
         MOTOR_RULES.inflate();
-        saveChainer.execute();
+        //saveChainer.execute();
     }
 
     function processHtml() {

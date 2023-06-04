@@ -3,9 +3,9 @@
 TABS.programming = {};
 
 TABS.programming.initialize = function (callback, scrollPosition) {
-    let loadChainer = new MSPChainerClass(),
-        saveChainer = new MSPChainerClass(),
-        statusChainer = new MSPChainerClass();
+    // let loadChainer = new MSPChainerClass(),
+    //     saveChainer = new MSPChainerClass(),
+    //     statusChainer = new MSPChainerClass();
 
     if (GUI.active_tab != 'programming') {
         GUI.active_tab = 'programming';
@@ -22,18 +22,18 @@ TABS.programming.initialize = function (callback, scrollPosition) {
     // loadChainer.execute();
     loadHtml();
 
-    saveChainer.setChain([
-        mspHelper.sendLogicConditions,
-        mspHelper.sendProgrammingPid,
-        mspHelper.saveToEeprom
-    ]);
+    // saveChainer.setChain([
+    //     mspHelper.sendLogicConditions,
+    //     mspHelper.sendProgrammingPid,
+    //     mspHelper.saveToEeprom
+    // ]);
     
-    statusChainer.setChain([
-        mspHelper.loadLogicConditionsStatus,
-        mspHelper.loadGlobalVariablesStatus,
-        mspHelper.loadProgrammingPidStatus
-    ]);
-    statusChainer.setExitPoint(onStatusPullDone);
+    // statusChainer.setChain([
+    //     mspHelper.loadLogicConditionsStatus,
+    //     mspHelper.loadGlobalVariablesStatus,
+    //     mspHelper.loadProgrammingPidStatus
+    // ]);
+    // statusChainer.setExitPoint(onStatusPullDone);
 
     function loadHtml() {
         GUI.load("./tabs/programming.html", processHtml);
@@ -54,11 +54,11 @@ TABS.programming.initialize = function (callback, scrollPosition) {
         localize();
 
         $('#save-button').click(function () {
-            saveChainer.execute();
+            //saveChainer.execute();
         });
 
         helper.mspBalancedInterval.add('logic_conditions_pull', 100, 1, function () {
-            statusChainer.execute();
+            //statusChainer.execute();
         });
 
         GUI.content_ready(callback);

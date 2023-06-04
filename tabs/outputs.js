@@ -42,20 +42,20 @@ TABS.outputs.initialize = function (callback) {
 
     update_arm_status();
 
-    var saveChainer = new MSPChainerClass();
+    // var saveChainer = new MSPChainerClass();
 
-    saveChainer.setChain([
-        saveSettings,
-        mspHelper.sendServoConfigurations,
-        mspHelper.saveAdvancedConfig,
-        mspHelper.saveBfConfig,
-        mspHelper.saveMiscV2,
-        mspHelper.saveToEeprom
-    ]);
-    saveChainer.setExitPoint(function () {
-        GUI.log(chrome.i18n.getMessage('eeprom_saved_ok'));
-        MOTOR_RULES.cleanup();
-    });
+    // saveChainer.setChain([
+    //     saveSettings,
+    //     mspHelper.sendServoConfigurations,
+    //     mspHelper.saveAdvancedConfig,
+    //     mspHelper.saveBfConfig,
+    //     mspHelper.saveMiscV2,
+    //     mspHelper.saveToEeprom
+    // ]);
+    // saveChainer.setExitPoint(function () {
+    //     GUI.log(chrome.i18n.getMessage('eeprom_saved_ok'));
+    //     MOTOR_RULES.cleanup();
+    // });
 
     function load_html() {
         GUI.load("./tabs/outputs.html", Settings.processHtml(onLoad));
@@ -369,7 +369,7 @@ TABS.outputs.initialize = function (callback) {
             });
 
             //Save configuration to FC
-            saveChainer.execute();
+            //saveChainer.execute();
         }
 
         // drop previous table
@@ -405,17 +405,17 @@ TABS.outputs.initialize = function (callback) {
         $('a.save').click(function () {
             GUI.log(chrome.i18n.getMessage('reboot?'));
             preflight_reboot(); // buzz todo n- no worky
-            saveChainer.setExitPoint(function () {
-                //noinspection JSUnresolvedVariable
-                GUI.log(chrome.i18n.getMessage('configurationEepromSaved'));
+            // saveChainer.setExitPoint(function () {
+            //     //noinspection JSUnresolvedVariable
+            //     GUI.log(chrome.i18n.getMessage('configurationEepromSaved'));
 
-                GUI.tab_switch_cleanup(function () {
-                    //MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, function () {
-                        GUI.log(chrome.i18n.getMessage('deviceRebooting'));
-                        GUI.handleReconnect($('.tab_outputs a'));
-                   // });
-                });
-            });
+            //     GUI.tab_switch_cleanup(function () {
+            //         //MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, function () {
+            //             GUI.log(chrome.i18n.getMessage('deviceRebooting'));
+            //             GUI.handleReconnect($('.tab_outputs a'));
+            //        // });
+            //     });
+            // });
             helper.features.reset();
             helper.features.fromUI($('.tab-motors'));
             helper.features.execute(servos_update);
