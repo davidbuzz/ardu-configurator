@@ -352,7 +352,7 @@ class SmartSerialLink extends EventEmitter {
           console.log('[SerialPort] disconnect event');
           //ttt.ISSERIALCONNECTED = false;
           if (( ttt.ISSERIALCONNECTED == false ) && (ttt.reconnecting == false)) return;// user triggered via destroy()
-          ttt.retry();// not user triggered
+          //ttt.retry();// not user triggered
         });
 
         // called when a previously valid thing was unplugged...
@@ -388,18 +388,18 @@ class SmartSerialLink extends EventEmitter {
             // don't report same error more than 1hz..
             if (ttt.last_error != error.toString()) {
               ttt.last_error = error.toString();
-              console.log('[SerialPort] ' , error , " - retrying...");
+              //console.log('[SerialPort] ' , error , " - retrying...");
             }
 
-           ttt.retry();
+           //ttt.retry();
 
         });
 
       // serial-specific
      this.heartbeat_interval = setInterval(function(){ // cant use 'this' inside this call, we're talking to the instance.
           ttt.heartbeat(); // types '>' on console 
-          ttt.last_error = undefined;
-          if (ttt.ISSERIALCONNECTED ) show_stream_rates('serial',3)
+          //ttt.last_error = undefined;
+          //if (ttt.ISSERIALCONNECTED ) show_stream_rates('serial',3)
         },1000);
 
   }
