@@ -70,6 +70,7 @@ var backend_generic_message_handler = function(mavmsg) {
 
     if (! newWindow) return;// don't try to post to new window till its real.
     
+    if ( ! ['heartbeat', 'param_value','timesync','statustext','global_position_int','rc_channels','aoa_ssa','aoa_soa','attitude','sys_status','power_status','mission_current','servo_output_raw','system_time','ahrs','wind','terrain_report','ekf_status_report','battery_status','gps_raw_int','vibration','scaled_pressure','scaled_imu2','raw_imu','meminfo','vfr_hud'].includes((mavmsg._name).toLowerCase()) )
     console.log('backend recieved msg, routing to GUI',mavmsg);
 
     if (['COMMAND_ACK'].includes(mavmsg._name)) {

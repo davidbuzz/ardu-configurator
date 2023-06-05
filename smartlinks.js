@@ -88,7 +88,8 @@ backend_generic_link_sender = function(mavmsg,sysid) {
     // if (mavmsg.fromfrontend ) mtype = "FRONT";
     // console.log(mtype,mavmsg,sysid);
 
-    console.log('back send-->',mavmsg);
+    if ( ! ['heartbeat', 'param_value','timesync','statustext','global_position_int','rc_channels','aoa_ssa','aoa_soa','attitude','sys_status','power_status','mission_current','servo_output_raw','system_time','ahrs','wind','terrain_report','ekf_status_report','battery_status','gps_raw_int','vibration','scaled_pressure','scaled_imu2','raw_imu','meminfo','vfr_hud'].includes((mavmsg._name).toLowerCase()) )
+    console.log('backend send-->',mavmsg);
 
 
     // a pretty dumb solution here to try to send it out all active uplinks that are reporting is_connected()
@@ -200,7 +201,7 @@ class SmartSerialLink extends EventEmitter {
         this.streamrate = undefined;
         this.is_output = is_output;
 
-        this.ISSERIALCONNECTED = false; // is serial ACTUALLY connected?
+        this.ISSERIALCONNECTED = true; // is serial ACTUALLY connected, just-opened, assume true till we know otherwise. [ .open also sets this]
 
         this.reconnecting = false; // is serial *REQUESTED* to be connected? [ie retry till connected]
 
@@ -248,9 +249,14 @@ class SmartSerialLink extends EventEmitter {
     // because the normal method of disconnecting is a 'close_all_links()' call, which 
     // calls destroy() this does not enable re-connecting.
     destroy () {
+        console.log("serial destroy");
         this.reconnecting = false;
         this.ISSERIALCONNECTED = false; 
+        try{
         this.serialPort.close(); //this triggers  a 'disconnect' event even when user asked for it in GUI, or if they didn't.
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     // serials are sent with the write()
