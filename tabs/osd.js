@@ -287,14 +287,14 @@ FONT.upload = function (callback) {
             }
             // Force usage of V1/V2 protocol to workaround the 64 byte write bug
             // on F3 when the configurator is running on macOS
-            var proto = next <= 255 ? MSP.constants.PROTOCOL_V1 : MSP.constants.PROTOCOL_V2;
+            //var proto = next <= 255 ? MSP.constants.PROTOCOL_V1 : MSP.constants.PROTOCOL_V2;
             //var proto = next <= 255 ? MSP.constants.PROTOCOL_V1 : MSP.constants.PROTOCOL_V2; PROTOCOL_MAV2?
-            var data = FONT.msp.encode(next);
-            return MSP.promise(MSPCodes.MSP_OSD_CHAR_WRITE, data, proto);
+            //var data = FONT.msp.encode(next);
+            return true;//MSP.promise(MSPCodes.MSP_OSD_CHAR_WRITE, data, proto);
         });
     }, Promise.resolve()).then(function() {
         OSD.GUI.jbox.close();
-        return MSP.promise(MSPCodes.MSP_SET_REBOOT);
+        return true;//MSP.promise(MSPCodes.MSP_SET_REBOOT);
     });
 };
 
@@ -1660,32 +1660,32 @@ OSD.reload = function(callback) {
             callback();
         }
     };
-    MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_LAYOUTS).then(function (resp) {
+    // MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_LAYOUTS).then(function (resp) {
 
-        OSD.msp.decodeLayoutCounts(resp);
-        // Get data for all layouts
-        var ids = Array.apply(null, {length: OSD.data.layout_count}).map(Number.call, Number);
-        var layouts = Promise.mapSeries(ids, function (layoutIndex, ii) {
-            var data = [];
-            data.push8(layoutIndex);
-            return MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_LAYOUTS, data).then(function (resp) {
-                OSD.msp.decodeLayout(layoutIndex, resp);
-            });
-        });
-        layouts.then(function () {
-            OSD.updateSelectedLayout(OSD.data.selected_layout || 0);
+    //     OSD.msp.decodeLayoutCounts(resp);
+    //     // Get data for all layouts
+    //     var ids = Array.apply(null, {length: OSD.data.layout_count}).map(Number.call, Number);
+    //     var layouts = Promise.mapSeries(ids, function (layoutIndex, ii) {
+    //         var data = [];
+    //         data.push8(layoutIndex);
+    //         return MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_LAYOUTS, data).then(function (resp) {
+    //             OSD.msp.decodeLayout(layoutIndex, resp);
+    //         });
+    //     });
+    //     layouts.then(function () {
+    //         OSD.updateSelectedLayout(OSD.data.selected_layout || 0);
 
-            MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_ALARMS).then(function (resp) {
-                OSD.msp.decodeAlarms(resp);
+    //         MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_ALARMS).then(function (resp) {
+    //             OSD.msp.decodeAlarms(resp);
 
-                MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_PREFERENCES).then(function (resp) {
-                    OSD.data.supported = true;
-                    OSD.msp.decodePreferences(resp);
-                    done();
-                });
-            });
-        });
-    });
+    //             MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_PREFERENCES).then(function (resp) {
+    //                 OSD.data.supported = true;
+    //                 OSD.msp.decodePreferences(resp);
+    //                 done();
+    //             });
+    //         });
+    //     });
+    // });
 };
 
 OSD.updateSelectedLayout = function(new_layout) {
@@ -1708,20 +1708,20 @@ OSD.updateDisplaySize = function () {
 
 OSD.saveAlarms = function(callback) {
     let data = OSD.msp.encodeAlarms();
-    return MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_SET_ALARMS, data).then(callback);
+    return true;//MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_SET_ALARMS, data).then(callback);
 }
 
 OSD.saveConfig = function(callback) {
     return OSD.saveAlarms(function () {
         var data = OSD.msp.encodePreferences();
-        return MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_SET_PREFERENCES, data).then(callback);
+        return true;//MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_SET_PREFERENCES, data).then(callback);
     });
 };
 
 OSD.saveItem = function(item, callback) {
     let pos = OSD.data.items[item.id];
     let data = OSD.msp.encodeLayoutItem(OSD.data.selected_layout, item, pos);
-    return MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_SET_LAYOUT_ITEM, data).then(callback);
+    return true;//MSP.promise(MSPCodes.MSP2_ARDUPILOT_OSD_SET_LAYOUT_ITEM, data).then(callback);
 };
 
 //noinspection JSUnusedLocalSymbols
@@ -2404,7 +2404,7 @@ TABS.osd.initialize = function (callback) {
         $('a.save').click(function () {
             Settings.saveInputs().then(function () {
                 var self = this;
-                MSP.promise(MSPCodes.MSP_EEPROM_WRITE);
+                //MSP.promise(MSPCodes.MSP_EEPROM_WRITE);
                 GUI.log('OSD settings saved');
                 var oldText = $(this).text();
                 $(this).html("Saved");

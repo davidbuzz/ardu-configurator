@@ -530,10 +530,10 @@ $(document).ready( function () {
 
     profile_e.change(function () {
         var profile = parseInt($(this).val());
-        MSP.send_message(MSPCodes.MSP_SELECT_SETTING, [profile], false, function () {
-            GUI.log(chrome.i18n.getMessage('pidTuningLoadedProfile', [profile + 1]));
-            //updateActivatedTab();
-        });
+        // MSP.send_message(MSPCodes.MSP_SELECT_SETTING, [profile], false, function () {
+        //     GUI.log(chrome.i18n.getMessage('pidTuningLoadedProfile', [profile + 1]));
+        //     //updateActivatedTab();
+        // });
         updateActivatedTab();
     });
 
@@ -541,10 +541,10 @@ $(document).ready( function () {
 
     batteryprofile_e.change(function () {
         var batteryprofile = parseInt($(this).val());
-        MSP.send_message(MSPCodes.MSP2_ARDUPILOT_SELECT_BATTERY_PROFILE, [batteryprofile], false, function () {
-            GUI.log(chrome.i18n.getMessage('loadedBatteryProfile', [batteryprofile + 1]));
-            //updateActivatedTab();
-        });
+        // MSP.send_message(MSPCodes.MSP2_ARDUPILOT_SELECT_BATTERY_PROFILE, [batteryprofile], false, function () {
+        //     GUI.log(chrome.i18n.getMessage('loadedBatteryProfile', [batteryprofile + 1]));
+        //     //updateActivatedTab();
+        // });
         updateActivatedTab();
     });
 });

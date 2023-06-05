@@ -2871,10 +2871,10 @@ var mspHelper = (function (gui) {
                     /*
                      * Compute roundtrip
                      */
-                    if (dataHandler.callbacks[i]) {
-                        helper.mspQueue.putRoundtrip(new Date().getTime() - dataHandler.callbacks[i].createdOn);
-                        helper.mspQueue.putHardwareRoundtrip(new Date().getTime() - dataHandler.callbacks[i].sentOn);
-                    }
+                    // if (dataHandler.callbacks[i]) {
+                    //     helper.mspQueue.putRoundtrip(new Date().getTime() - dataHandler.callbacks[i].createdOn);
+                    //     helper.mspQueue.putHardwareRoundtrip(new Date().getTime() - dataHandler.callbacks[i].sentOn);
+                    // }
 
                     // remove object from array
                     dataHandler.callbacks.splice(i, 1);
@@ -4021,33 +4021,33 @@ var mspHelper = (function (gui) {
             mask |= (led.y << 0);
             mask |= (led.x << 4);
 
-            for (functionLetterIndex = 0; functionLetterIndex < led.functions.length; functionLetterIndex++) {
-                var fnIndex = MSP.ledBaseFunctionLetters.indexOf(led.functions[functionLetterIndex]);
-                if (fnIndex >= 0) {
-                    mask |= (fnIndex << 8);
-                    break;
-                }
-            }
+            // for (functionLetterIndex = 0; functionLetterIndex < led.functions.length; functionLetterIndex++) {
+            //     var fnIndex = MSP.ledBaseFunctionLetters.indexOf(led.functions[functionLetterIndex]);
+            //     if (fnIndex >= 0) {
+            //         mask |= (fnIndex << 8);
+            //         break;
+            //     }
+            // }
 
-            for (var overlayLetterIndex = 0; overlayLetterIndex < led.functions.length; overlayLetterIndex++) {
+            // for (var overlayLetterIndex = 0; overlayLetterIndex < led.functions.length; overlayLetterIndex++) {
 
-                bitIndex = MSP.ledOverlayLetters.indexOf(led.functions[overlayLetterIndex]);
-                if (bitIndex >= 0) {
-                    mask |= bit_set(mask, bitIndex + 12);
-                }
+            //     bitIndex = MSP.ledOverlayLetters.indexOf(led.functions[overlayLetterIndex]);
+            //     if (bitIndex >= 0) {
+            //         mask |= bit_set(mask, bitIndex + 12);
+            //     }
 
-            }
+            // }
 
-            mask |= (led.color << 18);
+            // mask |= (led.color << 18);
 
-            for (directionLetterIndex = 0; directionLetterIndex < led.directions.length; directionLetterIndex++) {
+            // for (directionLetterIndex = 0; directionLetterIndex < led.directions.length; directionLetterIndex++) {
 
-                bitIndex = MSP.ledDirectionLetters.indexOf(led.directions[directionLetterIndex]);
-                if (bitIndex >= 0) {
-                    mask |= bit_set(mask, bitIndex + 22);
-                }
+            //     bitIndex = MSP.ledDirectionLetters.indexOf(led.directions[directionLetterIndex]);
+            //     if (bitIndex >= 0) {
+            //         mask |= bit_set(mask, bitIndex + 22);
+            //     }
 
-            }
+            // }
 
             mask |= (0 << 28); // parameters
 
@@ -4640,7 +4640,7 @@ var mspHelper = (function (gui) {
 
     self.setSetting = function (name, value) {
         this.encodeSetting(name, value).then(function (data) {
-            return MSP.promise(MSPCodes.MSPV2_SET_SETTING, data);
+            return true;//MSP.promise(MSPCodes.MSPV2_SET_SETTING, data);
         });
     };
 

@@ -377,10 +377,10 @@ TABS.receiver.initialize = function (callback) {
             /*
              * Throttling
              */
-            if (helper.mspQueue.shouldDrop()) {
-                update_ui();
-                return;
-            }
+            // if (helper.mspQueue.shouldDrop()) {
+            //     update_ui();
+            //     return;
+            // }
 
             //MSP.send_message(MSPCodes.MSP_RC, false, false, null);
             update_ui();

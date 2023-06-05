@@ -31,7 +31,7 @@ helper.periodicStatusUpdater = (function () {
 
     privateScope.updateView = function () {
 
-        var active = ((Date.now() - MSP.analog_last_received_timestamp) < publicScope.getUpdateInterval(connection.bitrate) * 3);
+        var active = true;//((Date.now() - MSP.analog_last_received_timestamp) < publicScope.getUpdateInterval(connection.bitrate) * 3);
 
         if (FC.isModeEnabled('ARM')) // buzz todo put arming info here
             $(".armedicon").css({
@@ -150,9 +150,9 @@ helper.periodicStatusUpdater = (function () {
 
         if (GUI.active_tab != 'cli') {
 
-            if (helper.mspQueue.shouldDropStatus()) {
-                return;
-            }
+            // if (helper.mspQueue.shouldDropStatus()) {
+            //     return;
+            // }
 
             // MSP.send_message(MSPCodes.MSP_SENSOR_STATUS, false, false);
             // MSP.send_message(MSPCodes.MSPV2_ARDUPILOT_STATUS, false, false);

@@ -458,10 +458,10 @@ TABS.outputs.initialize = function (callback) {
             /*
             * Enable balancer
             */
-            if (helper.mspQueue.shouldDrop()) {
-                update_accel_graph();
-                return;
-            }
+            // if (helper.mspQueue.shouldDrop()) {
+            //     update_accel_graph();
+            //     return;
+            // }
 
             //MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, null);
             update_accel_graph();

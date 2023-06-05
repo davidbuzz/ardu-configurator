@@ -373,9 +373,9 @@ TABS.mission_control.initialize = function (callback) {
               //    return;
               //}
 
-              if (helper.mspQueue.shouldDrop()) {
-                  return;
-              }
+            //   if (helper.mspQueue.shouldDrop()) {
+            //       return;
+            //   }
 
               //get_raw_gps_data();
               update_gpsTrack(); // end of the chain of events

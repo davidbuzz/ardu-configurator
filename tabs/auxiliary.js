@@ -342,9 +342,9 @@ TABS.auxiliary.initialize = function (callback) {
         // data pulling functions used inside interval timer
         function get_rc_data() {
 
-            if (helper.mspQueue.shouldDrop()) {
-                return;
-            }
+            // if (helper.mspQueue.shouldDrop()) {
+            //     return;
+            // }
 
             //MSP.send_message(MSPCodes.MSP_RC, false, false, null);
             update_ui();

@@ -83,7 +83,7 @@ GUI_control.prototype.log = function (message) {
 // callback = code to run when cleanup is finished
 // default switch doesn't require callback to be set
 GUI_control.prototype.tab_switch_cleanup = function (callback) {
-    MSP.callbacks_cleanup(); // we don't care about any old data that might or might not arrive
+    //MSP.callbacks_cleanup(); // we don't care about any old data that might or might not arrive
 
     helper.interval.killAll(['global_data_refresh', 'msp-load-update']);
     helper.mspBalancedInterval.flush();

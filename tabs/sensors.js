@@ -429,10 +429,10 @@ TABS.sensors.initialize = function (callback) {
                     /*
                      * Enable balancer
                      */
-                    if (helper.mspQueue.shouldDrop()) {
-                        update_imu_graphs();
-                        return;
-                    }
+                    // if (helper.mspQueue.shouldDrop()) {
+                    //     update_imu_graphs();
+                    //     return;
+                    // }
 
                     //MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, null);
                     update_imu_graphs();
@@ -445,10 +445,10 @@ TABS.sensors.initialize = function (callback) {
                     /*
                      * Enable balancer
                      */
-                    if (helper.mspQueue.shouldDrop()) {
-                        update_altitude_graph();
-                        return;
-                    }
+                    // if (helper.mspQueue.shouldDrop()) {
+                    //     update_altitude_graph();
+                    //     return;
+                    // }
 
                     //MSP.send_message(MSPCodes.MSP_ALTITUDE, false, false, update_altitude_graph);
                     update_altitude_graph();
@@ -461,10 +461,10 @@ TABS.sensors.initialize = function (callback) {
                     /*
                      * Enable balancer
                      */
-                    if (helper.mspQueue.shouldDrop()) {
-                        update_sonar_graphs();
-                        return;
-                    }
+                    // if (helper.mspQueue.shouldDrop()) {
+                    //     update_sonar_graphs();
+                    //     return;
+                    // }
 
                     //MSP.send_message(MSPCodes.MSP_SONAR, false, false, update_sonar_graphs);
                     update_sonar_graphs();
@@ -477,10 +477,10 @@ TABS.sensors.initialize = function (callback) {
                     /*
                      * Enable balancer
                      */
-                    if (helper.mspQueue.shouldDrop()) {
-                        update_airspeed_graphs();
-                        return;
-                    }
+                    // if (helper.mspQueue.shouldDrop()) {
+                    //     update_airspeed_graphs();
+                    //     return;
+                    // }
 
                     //MSP.send_message(MSPCodes.MSPV2_ARDUPILOT_AIR_SPEED, false, false, update_airspeed_graphs);
                     update_airspeed_graphs();
@@ -493,10 +493,10 @@ TABS.sensors.initialize = function (callback) {
                     /*
                      * Enable balancer
                      */
-                    if (helper.mspQueue.shouldDrop()) {
-                        update_temperature_graphs();
-                        return;
-                    }
+                    // if (helper.mspQueue.shouldDrop()) {
+                    //     update_temperature_graphs();
+                    //     return;
+                    // }
 
                     //MSP.send_message(MSPCodes.MSP2_ARDUPILOT_TEMPERATURES, false, false, update_temperature_graphs);
                     update_temperature_graphs();
@@ -509,10 +509,10 @@ TABS.sensors.initialize = function (callback) {
                     /*
                      * Enable balancer
                      */
-                    if (helper.mspQueue.shouldDrop()) {
-                        update_debug_graphs();
-                        return;
-                    }
+                    // if (helper.mspQueue.shouldDrop()) {
+                    //     update_debug_graphs();
+                    //     return;
+                    // }
 
                     //MSP.send_message(MSPCodes.MSP2_ARDUPILOT_DEBUG, false, false, update_debug_graphs);
                     update_debug_graphs();

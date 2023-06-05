@@ -22,9 +22,9 @@ $(document).ready(function () {
         var $this = $(this);
 
         if ($this.is(':checked')) {
-            helper.mspQueue.setLockMethod('hard');
+            //helper.mspQueue.setLockMethod('hard');
         } else {
-            helper.mspQueue.setLockMethod('soft');
+            //helper.mspQueue.setLockMethod('soft');
         }
     });
 
@@ -123,12 +123,12 @@ $(document).ready(function () {
         } else {
 
             helper.timeout.add('waiting_for_bootup', function waiting_for_bootup() {
-                MSP.send_message(MSPCodes.MSP_STATUS, false, false, function () {
-                    //noinspection JSUnresolvedVariable
-                    //GUI.log(chrome.i18n.getMessage('deviceReady'));
-                    //noinspection JSValidateTypes
-                    //TABS.configuration.initialize(false, $('#content').scrollTop());
-                });
+                // MSP.send_message(MSPCodes.MSP_STATUS, false, false, function () {
+                //     //noinspection JSUnresolvedVariable
+                //     //GUI.log(chrome.i18n.getMessage('deviceReady'));
+                //     //noinspection JSValidateTypes
+                //     //TABS.configuration.initialize(false, $('#content').scrollTop());
+                // });
                 GUI.log(chrome.i18n.getMessage('deviceReady'));
                 TABS.configuration.initialize(false, $('#content').scrollTop());
             },1500); // 1500 ms seems to be just the right amount of delay to prevent data request timeouts
@@ -213,12 +213,12 @@ $(document).ready(function () {
                     /*
                      * Flush
                      */
-                    helper.mspQueue.flush();
-                    helper.mspQueue.freeHardLock();
-                    helper.mspQueue.freeSoftLock();
+                    // helper.mspQueue.flush();
+                    // helper.mspQueue.freeHardLock();
+                    // helper.mspQueue.freeSoftLock();
 
                     connection.disconnect(onClosed);
-                    MSP.disconnect_cleanup();
+                    //MSP.disconnect_cleanup();
 
                     // Reset various UI elements
                     $('span.i2c-error').text(0);
@@ -389,7 +389,7 @@ function onConnect() {
     $('.mode-disconnected').hide();
     $('.mode-connected').show();
 
-    MSP.send_message(MSPCodes.MSP_DATAFLASH_SUMMARY, false, false);
+    //MSP.send_message(MSPCodes.MSP_DATAFLASH_SUMMARY, false, false);
 
     $('#sensor-status').show();
     $('#portsinput').hide();
@@ -413,13 +413,13 @@ function onConnect() {
         PIDs.push(new Array(4));
     }
 
-    helper.interval.add('msp-load-update', function () {
-        $('#msp-version').text("MSP version: " + MSP.protocolVersion.toFixed(0));
-        $('#msp-load').text("MSP load: " + helper.mspQueue.getLoad().toFixed(1));
-        $('#msp-roundtrip').text("MSP round trip: " + helper.mspQueue.getRoundtrip().toFixed(0));
-        $('#hardware-roundtrip').text("HW round trip: " + helper.mspQueue.getHardwareRoundtrip().toFixed(0));
-        $('#drop-rate').text("Drop ratio: " + helper.mspQueue.getDropRatio().toFixed(0) + "%");
-    }, 100);
+    // helper.interval.add('msp-load-update', function () {
+    //     $('#msp-version').text("MSP version: " + MSP.protocolVersion.toFixed(0));
+    //     $('#msp-load').text("MSP load: " + helper.mspQueue.getLoad().toFixed(1));
+    //     $('#msp-roundtrip').text("MSP round trip: " + helper.mspQueue.getRoundtrip().toFixed(0));
+    //     $('#hardware-roundtrip').text("HW round trip: " + helper.mspQueue.getHardwareRoundtrip().toFixed(0));
+    //     $('#drop-rate').text("Drop ratio: " + helper.mspQueue.getDropRatio().toFixed(0) + "%");
+    // }, 100);
 
     helper.interval.add('global_data_refresh', helper.periodicStatusUpdater.run, helper.periodicStatusUpdater.getUpdateInterval(connection.bitrate), false);
 }

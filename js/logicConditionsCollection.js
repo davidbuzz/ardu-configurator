@@ -41,14 +41,14 @@ let LogicConditionsCollection = function () {
     };
 
     self.onSave = function () {
-        let chain = new MSPChainerClass()
+        // let chain = new MSPChainerClass()
 
-        chain.setChain([
-            mspHelper.sendLogicConditions,
-            mspHelper.saveToEeprom
-        ]);
+        // chain.setChain([
+        //     mspHelper.sendLogicConditions,
+        //     mspHelper.saveToEeprom
+        // ]);
 
-        chain.execute();
+        // chain.execute();
     };
 
     self.onClose = function() {

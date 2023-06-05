@@ -169,9 +169,9 @@ TABS.gps.initialize = function (callback) {
             //    return;
             //}
 
-            if (helper.mspQueue.shouldDrop()) {
-                return;
-            }
+            // if (helper.mspQueue.shouldDrop()) {
+            //     return;
+            // }
 
             //get_raw_gps_data(); mavlink streamed now, so just do gui
             // then ..

@@ -650,7 +650,7 @@ var MSP = {
      * @param {MSP} mspData
      */
     putCallback: function (mspData) {
-        MSP.callbacks.push(mspData);
+        //MSP.callbacks.push(mspData);
     },
 
     /**

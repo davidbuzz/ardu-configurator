@@ -41,7 +41,7 @@ TABS.advanced_tuning.initialize = function (callback) {
         $('a.save').click(function () {
             Settings.saveInputs().then(function () {
                 var self = this;
-                MSP.promise(MSPCodes.MSP_EEPROM_WRITE);
+                //MSP.promise(MSPCodes.MSP_EEPROM_WRITE);
                 var oldText = $(this).text();
                 $(this).html("Saved");
                 setTimeout(function () {
