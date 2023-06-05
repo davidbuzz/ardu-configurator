@@ -450,22 +450,22 @@ TABS.outputs.initialize = function (callback) {
             $voltageHelper = $(".current-voltage");
 
         // timer initialization
-        helper.interval.killAll(['motor_and_status_pull', 'global_data_refresh', 'msp-load-update']);
-        helper.mspBalancedInterval.flush();
+        // helper.interval.killAll(['motor_and_status_pull', 'global_data_refresh', 'msp-load-update']);
+        // helper.mspBalancedInterval.flush();
 
-        helper.interval.add('IMU_pull', function () {
+        // helper.interval.add('IMU_pull', function () {
 
-            /*
-            * Enable balancer
-            */
-            // if (helper.mspQueue.shouldDrop()) {
-            //     update_accel_graph();
-            //     return;
-            // }
+        //     /*
+        //     * Enable balancer
+        //     */
+        //     // if (helper.mspQueue.shouldDrop()) {
+        //     //     update_accel_graph();
+        //     //     return;
+        //     // }
 
-            //MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, null);
-            update_accel_graph();
-        }, 25, true);
+        //     //MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, null);
+        //     update_accel_graph();
+        // }, 25, true);
 
         helper.interval.add('ANALOG_pull', function () {
             $currentHelper.html(ANALOG.amperage.toFixed(2));

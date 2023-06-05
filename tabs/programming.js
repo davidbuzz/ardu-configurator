@@ -57,9 +57,9 @@ TABS.programming.initialize = function (callback, scrollPosition) {
             //saveChainer.execute();
         });
 
-        helper.mspBalancedInterval.add('logic_conditions_pull', 100, 1, function () {
-            //statusChainer.execute();
-        });
+        // helper.mspBalancedInterval.add('logic_conditions_pull', 100, 1, function () {
+        //     //statusChainer.execute();
+        // });
 
         GUI.content_ready(callback);
     }

@@ -397,7 +397,7 @@ TABS.receiver.initialize = function (callback) {
 
         }
 
-        helper.mspBalancedInterval.add('receiver_pull', 35, 1, get_rc_data);
+        //helper.mspBalancedInterval.add('receiver_pull', 35, 1, get_rc_data);
 
         GUI.content_ready(callback);
     }

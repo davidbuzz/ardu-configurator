@@ -710,7 +710,7 @@ TABS.mixer.initialize = function (callback, scrollPosition) {
 
         localize();
 
-        helper.mspBalancedInterval.add('logic_conditions_pull', 350, 1, getLogicConditionsStatus);
+        //helper.mspBalancedInterval.add('logic_conditions_pull', 350, 1, getLogicConditionsStatus);
 
         GUI.content_ready(callback);
     }

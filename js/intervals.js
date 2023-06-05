@@ -2,6 +2,8 @@
 
 var helper = helper || {};
 
+// helper.interval used by stm32.js  and apj.js 
+
 helper.interval = (function () {
 
     var privateScope = {},

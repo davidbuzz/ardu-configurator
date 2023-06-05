@@ -162,21 +162,21 @@ TABS.gps.initialize = function (callback) {
          * enable data pulling
          * GPS is usually refreshed at 5Hz, there is no reason to pull it much more often, really...
          */
-        helper.mspBalancedInterval.add('gps_pull', 200, 3, function gps_update() {
-            // avoid usage of the GPS commands until a GPS sensor is detected for targets that are compiled without GPS support.
-            //if (!have_sensor(CONFIG.activeSensors, 'gps')) {
-            //    update_ui();
-            //    return;
-            //}
+        // helper.mspBalancedInterval.add('gps_pull', 200, 3, function gps_update() {
+        //     // avoid usage of the GPS commands until a GPS sensor is detected for targets that are compiled without GPS support.
+        //     //if (!have_sensor(CONFIG.activeSensors, 'gps')) {
+        //     //    update_ui();
+        //     //    return;
+        //     //}
 
-            // if (helper.mspQueue.shouldDrop()) {
-            //     return;
-            // }
+        //     // if (helper.mspQueue.shouldDrop()) {
+        //     //     return;
+        //     // }
 
-            //get_raw_gps_data(); mavlink streamed now, so just do gui
-            // then ..
-            update_ui();
-        });
+        //     //get_raw_gps_data(); mavlink streamed now, so just do gui
+        //     // then ..
+        //     update_ui();
+        // });
 
         GUI.content_ready(callback);
     }

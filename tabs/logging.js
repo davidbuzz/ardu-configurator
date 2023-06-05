@@ -89,8 +89,8 @@ TABS.logging.initialize = function (callback) {
                             GUI.log(chrome.i18n.getMessage('loggingErrorOneProperty'));
                         }
                     } else {
-                        helper.interval.killAll(['global_data_refresh', 'msp-load-update']);
-                        helper.mspBalancedInterval.flush();
+                        // helper.interval.killAll(['global_data_refresh', 'msp-load-update']);
+                        // helper.mspBalancedInterval.flush();
 
                         $('.speed').prop('disabled', false);
                         $(this).text(chrome.i18n.getMessage('loggingStart'));

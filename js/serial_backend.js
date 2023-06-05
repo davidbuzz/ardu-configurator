@@ -200,9 +200,9 @@ $(document).ready(function () {
                 } else {
                     var wasConnected = CONFIGURATOR.connectionValid;
 
-                    helper.timeout.killAll();
-                    helper.interval.killAll(['global_data_refresh', 'msp-load-update']);
-                    helper.mspBalancedInterval.flush();
+                    // helper.timeout.killAll();
+                    // helper.interval.killAll(['global_data_refresh', 'msp-load-update']);
+                    // helper.mspBalancedInterval.flush();
 
                     GUI.tab_switch_cleanup();
                     GUI.tab_switch_in_progress = false;
@@ -421,7 +421,7 @@ function onConnect() {
     //     $('#drop-rate').text("Drop ratio: " + helper.mspQueue.getDropRatio().toFixed(0) + "%");
     // }, 100);
 
-    helper.interval.add('global_data_refresh', helper.periodicStatusUpdater.run, helper.periodicStatusUpdater.getUpdateInterval(connection.bitrate), false);
+    //helper.interval.add('global_data_refresh', helper.periodicStatusUpdater.run, helper.periodicStatusUpdater.getUpdateInterval(connection.bitrate), false);
 }
 
 function onClosed(result) {
