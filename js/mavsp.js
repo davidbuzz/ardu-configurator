@@ -43,6 +43,18 @@ var get_home_position = function(target_system,target_component){
     mavParserObj.send(new mavlink20.messages.command_long(target_system,target_component,command));
 }
 
+// small reverse-lookup from mav_v2.js
+var mav_ack_types = {
+    0 : "mavlink20.MAV_RESULT_ACCEPTED",
+    1 : "mavlink20.MAV_RESULT_TEMPORARILY_REJECTED",
+    2 : "mavlink20.MAV_RESULT_DENIED", 
+    3 : "mavlink20.MAV_RESULT_UNSUPPORTED",
+    4 : "mavlink20.MAV_RESULT_FAILED",
+    5 : "mavlink20.MAV_RESULT_IN_PROGRESS",
+    6 : "mavlink20.MAV_RESULT_CANCELLED"
+};
+
+
 var preflight_accel_cal = function(target_system,target_component) {
 
     if (target_system == undefined )target_system = SYSID;
@@ -61,13 +73,43 @@ var preflight_accel_cal = function(target_system,target_component) {
     // this.param7
 
     var packet = new mavlink20.messages.command_long(target_system,target_component,
-        mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION,
+        mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION, //MAV_CMD_PREFLIGHT_CALIBRATION=241
         0, // confirmation
         0,0,0,0,1,0,0 // params 1-7, param5=1 means 'accelerometer calibration'
         );
 
     mavParserObj.send(packet); 
-    console.log('Send accel preflight cal');
+    console.log('Send preflight_accel_cal');
+
+            // add temporary hook to listen for ACK, eg COMMAND_ACK command= 241 result= 0
+    //https://github.com/mavlink/c_library_v2/blob/master/common/mavlink_msg_command_ack.h
+    var m1 = mavlinkParser.on('COMMAND_ACK', function(ack) {
+        var from = this;
+        if ( ( ack.command == mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION )  && (ack.result == mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success?
+
+            console.log('Send preflight_accel_cal REPLIED OK');
+
+            // after getting an acknowledgement in the mavlink stream, stop listening
+            mavlinkParser.off('COMMAND_ACK',m1 ); // note we pass in the uuid 'm1' here be be sure we remove the *correct* 'off' hook
+
+            // $('#level_btn2').find('a').delay(2000).css('border', '1px solid #37a8db').css('color', '#37a8db').css('background-color', '#008000');//.css('a:hover', 'purple'); // test
+            // //  green=success                                                 blue                   blue                              green
+            // $('#level_btn2').find('a').delay(3000).animate({backgroundColor: '#ffffff','color': '#37a8db'}, 'slow', 'swing',function() {
+            //     // Animation complete.
+            //     $('#level_btn2').find('a').removeAttr('style'); // removeAttr removes all attribute styling, returning it 'stock'
+            //   }); 
+            // //  return to stock white/blue after some time                           white             blue 
+ 
+        }   
+        // todo ack.result =  fail  ..?
+        if ( ( ack.command == mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION )  && (ack.result != mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success? buzz todo
+            console.log('Send preflight_accel_cal REPLIED:', mav_ack_types[ack.result]);
+
+            // after getting an acknowledgement in the mavlink stream, stop listening
+            mavlinkParser.off('COMMAND_ACK',m1 ); // note we pass in the uuid 'm1' here be be sure we remove the *correct* 'off' hook
+
+        }
+    });
 }
 
 
@@ -99,7 +141,38 @@ var preflight_accel_cal_progress = function (target_system,target_component, ste
         );
 
     mavParserObj.send(packet); 
-    console.log('Send accel preflight progress');
+    console.log('Send preflight_accel_cal_progress');
+
+        // add temporary hook to listen for ACK, eg COMMAND_ACK command= 42006 result= 4
+    //https://github.com/mavlink/c_library_v2/blob/master/common/mavlink_msg_command_ack.h
+    var m1 = mavlinkParser.on('COMMAND_ACK', function(ack) {
+        var from = this;
+        if ( ( ack.command == mavlink20.MAV_CMD_ACCELCAL_VEHICLE_POS )  && (ack.result == mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success?
+
+            console.log('Send preflight_accel_cal_progress REPLIED OK');
+
+            // after getting an acknowledgement in the mavlink stream, stop listening
+            mavlinkParser.off('COMMAND_ACK',m1 ); // note we pass in the uuid 'm1' here be be sure we remove the *correct* 'off' hook
+
+            // $('#level_btn2').find('a').delay(2000).css('border', '1px solid #37a8db').css('color', '#37a8db').css('background-color', '#008000');//.css('a:hover', 'purple'); // test
+            // //  green=success                                                 blue                   blue                              green
+            // $('#level_btn2').find('a').delay(3000).animate({backgroundColor: '#ffffff','color': '#37a8db'}, 'slow', 'swing',function() {
+            //     // Animation complete.
+            //     $('#level_btn2').find('a').removeAttr('style'); // removeAttr removes all attribute styling, returning it 'stock'
+            //   }); 
+            // //  return to stock white/blue after some time                           white             blue 
+ 
+        }   
+        // todo ack.result =  fail  ..?
+        if ( ( ack.command == mavlink20.MAV_CMD_ACCELCAL_VEHICLE_POS )  && (ack.result != mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success? buzz todo
+            console.log('Send preflight_accel_cal_progress REPLIED:', mav_ack_types[ack.result]);
+
+            // after getting an acknowledgement in the mavlink stream, stop listening
+            mavlinkParser.off('COMMAND_ACK',m1 ); // note we pass in the uuid 'm1' here be be sure we remove the *correct* 'off' hook
+
+        }
+    }
+);
 
 }
 
@@ -140,7 +213,7 @@ var large_veh_mag_cal = function (yaw_heading, target_system,target_component ) 
     //https://github.com/mavlink/c_library_v2/blob/master/common/mavlink_msg_command_ack.h
     var m1 = mavlinkParser.on('COMMAND_ACK', function(ack) {
             var from = this;
-            if ( ( ack.command == mavlink20.MAV_CMD_FIXED_MAG_CAL_YAW )  && (ack.result == 4 ) ) {  // 4 -= success?
+            if ( ( ack.command == mavlink20.MAV_CMD_FIXED_MAG_CAL_YAW )  && (ack.result == mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success?
 
                 console.log('Send large_veh_mag_cal REPLIED');
 
@@ -156,10 +229,18 @@ var large_veh_mag_cal = function (yaw_heading, target_system,target_component ) 
                 //  return to stock white/blue after some time                           white             blue 
      
             }   
+            // todo ack.result =  fail  ..?
+            if ( ( ack.command == mavlink20.MAV_CMD_FIXED_MAG_CAL_YAW )  && (ack.result != mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success? buzz todo
+                console.log('Send large_veh_mag_cal REPLIED:', mav_ack_types[ack.result]);
 
+                // after getting an acknowledgement in the mavlink stream, stop listening
+                mavlinkParser.off('COMMAND_ACK',m1 ); // note we pass in the uuid 'm1' here be be sure we remove the *correct* 'off' hook
+
+            }
         }
     );
 }
+
 
 
 var level_accel_cal = function ( target_system,target_component ) {
@@ -182,9 +263,12 @@ var level_accel_cal = function ( target_system,target_component ) {
     //https://github.com/mavlink/c_library_v2/blob/master/common/mavlink_msg_command_ack.h
     var m1 = mavlinkParser.on('COMMAND_ACK', function(ack) {
         var from = this;
-        if ( ( ack.command == mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION )  && (ack.result == 0 ) ) {  // 0 = success? buzz todo
 
-            console.log('Send level_accel_cal REPLIED');
+        //mavlink20.MAV_RESULT_ACCEPTED = 0
+
+        if ( ( ack.command == mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION )  && (ack.result == mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success? buzz todo
+
+            console.log('Send level_accel_cal REPLIED SUCCESS');
 
             // after getting an acknowledgement in the mavlink stream, stop listening
             mavlinkParser.off('COMMAND_ACK',m1 ); // note we pass in the uuid 'm1' here be be sure we remove the *correct* 'off' hook
@@ -198,6 +282,14 @@ var level_accel_cal = function ( target_system,target_component ) {
             //  return to stock white/blue after some time                           white             blue 
  
         }   
+        // todo ack.result =  fail  ..?
+        if ( ( ack.command == mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION )  && (ack.result != mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success? buzz todo
+            console.log('Send level_accel_cal REPLIED:', mav_ack_types[ack.result]);
+
+            // after getting an acknowledgement in the mavlink stream, stop listening
+            mavlinkParser.off('COMMAND_ACK',m1 ); // note we pass in the uuid 'm1' here be be sure we remove the *correct* 'off' hook
+
+        }
 
     }
     );
