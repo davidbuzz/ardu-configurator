@@ -224,6 +224,13 @@ TABS.setup.initialize = function (callback) {
         // }, 100, true);
 
         function updateArminFailure() {
+
+            // minimal work-around for rndom state changes that come in before the GUI is ready for them.. we wait till CONFIG isnt undef
+            if (CONFIG == undefined ) {
+                //console.log("not connected yet, no CONFIG");
+                return;
+            }
+
             var flagNames = FC.getArmingFlags();
             for (var bit in flagNames) {
                 if (flagNames.hasOwnProperty(bit)) {
