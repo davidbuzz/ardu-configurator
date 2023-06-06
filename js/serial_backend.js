@@ -421,7 +421,8 @@ function onConnect() {
     //     $('#drop-rate').text("Drop ratio: " + helper.mspQueue.getDropRatio().toFixed(0) + "%");
     // }, 100);
 
-    //helper.interval.add('global_data_refresh', helper.periodicStatusUpdater.run, helper.periodicStatusUpdater.getUpdateInterval(connection.bitrate), false);
+    // periodicStatusUpdater is used by Calibration screen for accelerometers etc as it sets up a 1hz refresh.
+    helper.interval.add('global_data_refresh', helper.periodicStatusUpdater.run, helper.periodicStatusUpdater.getUpdateInterval(connection.bitrate), false);
 }
 
 function onClosed(result) {

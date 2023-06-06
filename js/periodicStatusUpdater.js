@@ -88,38 +88,38 @@ helper.periodicStatusUpdater = (function () {
                     newtext = "Start Accel Cal? ... press the blue button.";
                     $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
                 }
-                if ( FC.longyREQ == 1) {
+                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_LEVEL) { // =1
                     newtext = "Please place vehicle <span style='color:red'>LEVEL NOW</span> then press the button.";
                     $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
                 }
-                if ( FC.longyREQ == 2) {
+                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_RIGHT) { //=2
                     newtext = "Please place vehicle on <span style='color:orange'>LEFT SIDE</span> then press the button.";
                     $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
                 }
-                if ( FC.longyREQ == 3) {
+                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_RIGHT) { //=3
                     newtext = "Please place vehicle on <span style='color:cyan'>RIGHT SIDE</span> then press the button.";
                     $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
                 }
-                if ( FC.longyREQ == 4) {
+                if ( FC.longyREQ ==  mavlink20.ACCELCAL_VEHICLE_POS_NOSEDOWN) { //=4
                     newtext = "Please place vehicle <span style='color:green'>NOSE DOWN</span> then press the button.";
                     $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
                 }
-                if ( FC.longyREQ == 5) {
+                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_NOSEUP) { //=5
                     newtext = "Please place vehicle <span style='color:blue'>NOSE UP</span> then press the button.";
                     $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
                 }
-                if ( FC.longyREQ == 6) {
+                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_BACK) { //=6
                     newtext = "Please place vehicle <span style='color:purple'>UPSIDE DOWN</span> then press the button.";
                     $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
                 }
-                if ( FC.longyREQ == 16777215 ) { // 16777215 is greater than 6
+                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_SUCCESS ) { // =16777215 is greater than 6
                     newtext = "Success!, recommend reboot now.";
                     console.log(newtext);
                     //FC.longyREQ = 0;
                     TABS.calibration.show_hide_steps(0);// hide steps when done
 
                 }
-                if ( FC.longyREQ == 16777216) { // 16777216 is greater than 6
+                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_FAILED) { // =16777216 is greater than 6
                     newtext = "Failed, recommend reboot now.";
                     console.log(newtext);
                     //FC.longyREQ = 0;
