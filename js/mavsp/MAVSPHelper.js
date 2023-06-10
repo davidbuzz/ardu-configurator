@@ -324,6 +324,9 @@ var mspHelper = (function (gui) {
     // always finish with a '\0'.
     var debugMsgBuffer = '';
 
+    var prev_msg = {_name:''};
+
+
     // mav version of processData - INCOMING packets thru here...
     self.processDataMav = function (mavmsg) {
 
@@ -349,11 +352,13 @@ var mspHelper = (function (gui) {
             //console.log("not connected yet, no CONFIG");
             return;
         }
-
         // log non-streaming msgs, don't do statustext here, we do it elsewhere 
-         if ( ! ['heartbeat', 'param_value','timesync','statustext','global_position_int','rc_channels','aoa_ssa','aoa_soa','attitude','sys_status','power_status','mission_current','servo_output_raw','system_time','ahrs','wind','terrain_report','ekf_status_report','battery_status','gps_raw_int','vibration','scaled_pressure','scaled_imu2','raw_imu','meminfo','vfr_hud'].includes((mavmsg._name).toLowerCase()) )
-        console.log('recieving-->',mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
-
+         if ( ! ['heartbeat', 'param_value','timesync','statustext','global_position_int','rc_channels','aoa_ssa','aoa_soa','attitude','sys_status','power_status','mission_current','servo_output_raw','system_time','ahrs','wind','terrain_report','ekf_status_report','battery_status','gps_raw_int','vibration','scaled_pressure','scaled_imu2','raw_imu','meminfo','vfr_hud'].includes((mavmsg._name).toLowerCase()) ) {
+            if (prev_msg._name !== mavmsg._name ) {
+            console.log('recieving-->',mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
+            prev_msg = mavmsg;
+            }
+         }
 
         // packet-specific stuff
         switch (mavmsg._id ) {
