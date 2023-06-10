@@ -85,7 +85,7 @@ var preflight_accel_cal = function(target_system,target_component) {
     //https://github.com/mavlink/c_library_v2/blob/master/common/mavlink_msg_command_ack.h
     var m1 = mavlinkParser.on('COMMAND_ACK', function(ack) {
         var from = this;
-        if ( ( ack.command == mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION )  && (ack.result == mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success?
+        if ( ( ack.command == mavlink20.MAV_CMD_PREFLIGHT_CALIBRATION )  && (ack.result == mavlink20.MAV_RESULT_ACCEPTED ) ) {  // 0 = success
 
             console.log('Send preflight_accel_cal REPLIED OK');
 
@@ -119,7 +119,8 @@ var preflight_accel_cal_progress = function (target_system,target_component, ste
     if (target_system == undefined )target_system = SYSID;
     if (target_component == undefined )target_component = COMPID;
 
-  //  vehicle sends:  MAV_CMD_ACCELCAL_VEHICLE_POS = 42429// # Used when doing accelerometer calibration. When sent to the GCS tells
+  //  vehicle sends:  MAV_CMD_ACCELCAL_VEHICLE_POS = 42429
+  // # Used when doing accelerometer calibration. When sent to the GCS tells
    //                         //# it what position to put the vehicle in. When
      //                       //# sent to the vehicle says what position the
        //                     //# vehicle is in. 
@@ -131,8 +132,12 @@ var preflight_accel_cal_progress = function (target_system,target_component, ste
     //    this.target_system , 
     //    this.target_component
 
-       var packet = new mavlink20.messages.command_ack(
-        mavlink20.MAVLINK_MSG_ID_COMMAND_ACK,
+    // on *first sesnd* of this 'ack' packet, it should be command=1,result=1, as per MP
+    // on *second send* of this pcket, it should be command=1,result=2, as per MP
+
+        //mavlink20.MAVLINK_MSG_ID_COMMAND_ACK,
+        var packet = new mavlink20.messages.command_ack(
+        1,     // command
         step, // result
         1, // progress
         0, //result2/param2

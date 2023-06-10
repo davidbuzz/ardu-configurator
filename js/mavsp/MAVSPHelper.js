@@ -971,6 +971,44 @@ var mspHelper = (function (gui) {
                         // drop everything including and after the first null byte.
                         var _message = mavmsg.text.replace(/\0.*$/g,'');
                         console.log(_message);
+
+                        if (_message.startsWith('Place ')){
+                            //FC.accelcal_count = 
+                        }
+
+                        switch(_message) {
+                            case 'Place vehicle level and press any key.':
+                            case 'Place vehicle on its LEFT side and press any key.':
+                            case 'Place vehicle on its RIGHT side and press any key.':
+                            case 'Place vehicle nose DOWN and press any key.':
+                            case 'Place vehicle nose UP and press any key.':
+                            case 'Place vehicle on its BACK and press any key.':
+                            case 'Calibration successful':
+                            case 'Calibration FAILED':
+                                break;
+                            case 'PreArm: 3D Accel calibration needed':
+                            case 'PreArm: Accels calibrated requires reboot':
+                                //todo
+                                break
+                            case 'PreArm: Compass not healthy':
+                                //todo
+                                break
+                            case 'PreArm: AHRS: waiting for home':
+                                //todo
+                                break
+                            case 'PreArm: Waiting for RC':
+                                //todo
+                                break
+                            case 'PreArm: Compass not healthy':
+                                //todo
+                                break
+                            case 'PreArm: Waiting for RC':
+                                //todo
+                                break
+                            default:
+                                console.log('todo')
+                                break
+                        }
             
                 // buzz todo show it in the gui..
                 break; 
@@ -1038,9 +1076,13 @@ var mspHelper = (function (gui) {
                 // 
                 switch ( mavmsg.command ) { //any of MAV_CMD_*  's 
                     case mavlink20.MAV_CMD_ACCELCAL_VEHICLE_POS:  //
-                        FC.longyREQ = mavmsg.param1; // veh pos 1 means 'please level' then ack., 
+
+                        // in the GUI, we treat FC.accelcal_count = -1 to mean 'start-over'
+                        FC.accelcal_count = mavmsg.param1; // veh pos , eg 1 from vehicle means 'please level' and then ack  [with command=1, and result=1]. we increment result, not commnd.
+                        //mavlink20.ACCELCAL_VEHICLE_POS_LEVEL = 1,ACCELCAL_VEHICLE_POS_LEFT = 2 etc
+
                         if (mavmsg.param1 != mavlink20.ACCELCAL_VEHICLE_POS_FAILED ) { //ACCELCAL_VEHICLE_POS_FAILED=16777216
-                            console.log('receiving COMMAND_LONG MAV_CMD_ACCELCAL_VEHICLE_POS -->');console.log(mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
+                            //console.log('receiving COMMAND_LONG MAV_CMD_ACCELCAL_VEHICLE_POS -->');console.log(mavmsg); //BUZZ uncomment to see fully parsed arriving packets in all their glory
                         } else {
                             // todo clear that error without a reboot.
                         }

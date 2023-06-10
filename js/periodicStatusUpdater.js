@@ -50,7 +50,6 @@ helper.periodicStatusUpdater = (function () {
                 'background-image': 'url("/images/icons/cf_icon_failsafe_grey.svg")'
             });
 
-        //if (ANALOG != undefined) {
             var nbCells;
 
             nbCells = ANALOG.cell_count;
@@ -81,59 +80,7 @@ helper.periodicStatusUpdater = (function () {
 
             $(".battery-legend").text(ANALOG.voltage + " V");
 
-            //---------------
-            if (GUI.active_tab == 'calibration') {
-                var newtext = "";
-                if ( FC.longyREQ == 0) {
-                    newtext = "Start Accel Cal? ... press the blue button.";
-                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
-                }
-                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_LEVEL) { // =1
-                    newtext = "Please place vehicle <span style='color:red'>LEVEL NOW</span> then press the button.";
-                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
-                }
-                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_RIGHT) { //=2
-                    newtext = "Please place vehicle on <span style='color:orange'>LEFT SIDE</span> then press the button.";
-                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
-                }
-                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_RIGHT) { //=3
-                    newtext = "Please place vehicle on <span style='color:cyan'>RIGHT SIDE</span> then press the button.";
-                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
-                }
-                if ( FC.longyREQ ==  mavlink20.ACCELCAL_VEHICLE_POS_NOSEDOWN) { //=4
-                    newtext = "Please place vehicle <span style='color:green'>NOSE DOWN</span> then press the button.";
-                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
-                }
-                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_NOSEUP) { //=5
-                    newtext = "Please place vehicle <span style='color:blue'>NOSE UP</span> then press the button.";
-                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
-                }
-                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_BACK) { //=6
-                    newtext = "Please place vehicle <span style='color:purple'>UPSIDE DOWN</span> then press the button.";
-                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
-                }
-                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_SUCCESS ) { // =16777215 is greater than 6
-                    newtext = "Success!, recommend reboot now.";
-                    console.log(newtext);
-                    //FC.longyREQ = 0;
-                    TABS.calibration.show_hide_steps(0);// hide steps when done
-
-                }
-                if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_FAILED) { // =16777216 is greater than 6
-                    newtext = "Failed, recommend reboot now.";
-                    console.log(newtext);
-                    //FC.longyREQ = 0;
-                    TABS.calibration.show_hide_steps(0);// hide steps when done
-
-                }
-                //$('div.note').html("stage:"+TABS.calibration.model+" "+newtext+" req:"+FC.longyREQ);
-                $('div.note').html(newtext+"<br>req:"+FC.longyREQ+"<br>model["+TABS.calibration.model+"]<br>");
-                
-
-            }
-            //--------------
-
-        //}
+    
 
         $('#quad-status_wrapper').show();
     };

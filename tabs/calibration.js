@@ -3,7 +3,7 @@
 
 TABS.calibration = {};
 
-TABS.calibration.model =  0;
+TABS.calibration.model =  -1; //means we don't know yet, =0 meaans 'first step of accel-cal, aka the 'LEVEL'
 
 
 TABS.calibration.show_hide_steps = function (sh) {
@@ -67,7 +67,7 @@ TABS.calibration.initialize = function (callback) {
         //noinspection JSUnresolvedVariable
         GUI.log(chrome.i18n.getMessage('configurationEepromSaved'));
 
-        FC.longyREQ = 0;
+        FC.accelcal_count = -1; // this is the variable name that mavproxy uses, and its used the same here.
 
         GUI.tab_switch_cleanup(function() {
         //    MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, reinitialize);
@@ -85,7 +85,7 @@ TABS.calibration.initialize = function (callback) {
         GUI.load("./tabs/calibration.html", processHtml);
     }
 
-    // 
+    // i ranges from 0-5, ie 6 items, but element id's of items being changed from 1-6 
     function updateCalibrationSteps() {
         for (var i = 0; i < 6; i++) {
             var $element = $('[data-step="' + (i + 1) + '"]');
@@ -134,7 +134,8 @@ TABS.calibration.initialize = function (callback) {
        // var newStep = null;
         var $button = $(this);
 
-        if (TABS.calibration.model === 0) {
+        // no steps succeeded , yet.  =0 means 'first step succeeded'
+        if (TABS.calibration.model === -1) {
             // reset all 6 values to zero.
             for (var i = 0; i < 6; i++) {
                 if (CALIBRATION_DATA.acc['Pos' + i] != 0) {
@@ -142,49 +143,42 @@ TABS.calibration.initialize = function (callback) {
                 }
             }
             updateCalibrationSteps();
-
             $('div.note').html("Asking Flight Controller...<br>");
-
-    
         }
 
-
-        // error state, start over
-        //if (FC.longyREQ > 255 ) { FC.longyREQ = 99999;  } // success or failure is both > 99999
-
-        // at FIRST step, we send a COMMAND_LONG , CMD=241 ,ie MAV_CMD_PREFLIGHT_CALIBRATION and 'param5 = 1'
-        if ((TABS.calibration.model == 0)  && (FC.longyREQ == 0) ) { 
-
+        // at FIRST PRESS, we send a COMMAND_LONG , CMD=241 ,ie MAV_CMD_PREFLIGHT_CALIBRATION and 'param5 = 1'
+        // when acknowledged, it sets FC.accelcal_count=1 as its first vlaue
+        if ((TABS.calibration.model == -1)  && (FC.accelcal_count == -1) ) { 
+            //CALIBRATION_DATA.acc['Pos0'] = 1; we don't chnge GUI on first go round, only on 'success' of step/s, so NOT HERE.
             preflight_accel_cal(SYSID,COMPID );
             GUI.log(chrome.i18n.getMessage('initialSetupAccelCalibStarted'));
-            
+
+            TABS.calibration.show_hide_steps(1);// show steps at start
+        }
+        // zero'th [first] step succeeded.? bump the model before the next if sttment renders it.
+        if ((TABS.calibration.model == -1)  && (FC.accelcal_count == 1) ) { 
+            TABS.calibration.model = 0;
         }
 
-        if ((TABS.calibration.model == 0)  && (FC.longyREQ == 1) ) { 
-            CALIBRATION_DATA.acc['Pos0'] = 1;
-            TABS.calibration.model = 1;
-            preflight_accel_cal_progress(SYSID,COMPID,TABS.calibration.model);
-
+        if ( (FC.accelcal_count >= 1) ) { 
+            CALIBRATION_DATA.acc['Pos'+(FC.accelcal_count-1)] = 1; //this is mrking the success of the prior one in the gui, so PosX where X = accelcal_count-1
+            preflight_accel_cal_progress(SYSID,COMPID,1); // send zero then increment 0->1 after send
+            TABS.calibration.model = (FC.accelcal_count-1); // we force it here, just to be sure, but normaally would be this anyway.
             GUI.log(chrome.i18n.getMessage('initialSetupAccelCalibProgress'));
+        } 
 
-        } else 
-        if (TABS.calibration.model >= 1 ) { 
-
-            preflight_accel_cal_progress(SYSID,COMPID,TABS.calibration.model);
-            CALIBRATION_DATA.acc['Pos' + TABS.calibration.model] = 1;
-            TABS.calibration.model +=1;
-            GUI.log(chrome.i18n.getMessage('initialSetupAccelCalibProgress'));
-
-        }
-        // if it fails early..
-        if ( FC.longyREQ == mavlink20.ACCELCAL_VEHICLE_POS_FAILED ) {
-            TABS.calibration.model = 6;
+        // if it fails , possibly early.... allow start-over, and reboot it now.
+        if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_FAILED ) {
+            TABS.calibration.model = -1; 
+            FC.accelcal_count = -1;// allow start over.
+            helper['autoconnect'] = true; // to simplify user experience.
+            reboot();
         }
 
-        // 
-        if (TABS.calibration.model > 6) {
-            TABS.calibration.model =0; 
-            FC.longyREQ == 0;// allow start over.
+        // on button press after success .. allow start-over, and reboot it now.
+        if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_SUCCESS ) {
+            TABS.calibration.model = -1; 
+            FC.accelcal_count = -1;// allow start over.
             helper['autoconnect'] = true; // to simplify user experience.
             reboot();
         }
@@ -417,6 +411,67 @@ TABS.calibration.initialize = function (callback) {
         localize();
 
         $('#calibrate-start-button').on('click', calibrateNew);
+
+        // on first page load, its null, on tab chnge it might be -1 , put something in yellow box.
+        FC.accelcal_count = -1; // where the drone is at, -1 mean we dont know.
+        TABS.calibration.model = -1; // where the GUI is at.
+
+        helper.interval.remove('accel_calibration_interval');//clenup prev.
+
+        helper.interval.add('accel_calibration_interval', function () { 
+
+            //---------------
+            if (GUI.active_tab == 'calibration') {
+                var newtext = "";
+                if ( FC.accelcal_count == -1) {
+                    newtext = "Start Accel Cal? ... press the blue button.";
+                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_LEVEL) { // =1
+                    newtext = "Please place vehicle <span style='color:red'>LEVEL NOW</span> then press the button.";
+                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_LEFT) { //=2
+                    newtext = "Please place vehicle on <span style='color:orange'>LEFT SIDE</span> then press the button.";
+                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_RIGHT) { //=3
+                    newtext = "Please place vehicle on <span style='color:cyan'>RIGHT SIDE</span> then press the button.";
+                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_NOSEDOWN) { //=4
+                    newtext = "Please place vehicle <span style='color:green'>NOSE DOWN</span> then press the button.";
+                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_NOSEUP) { //=5
+                    newtext = "Please place vehicle <span style='color:blue'>NOSE UP</span> then press the button.";
+                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_BACK) { //=6
+                    newtext = "Please place vehicle <span style='color:purple'>UPSIDE DOWN</span> then press the button.";
+                    $('#calibrate-start-button').css('pointer-events', 'auto').css('opacity', '1.0'); // make 'Calibrate Access' interactive again
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_SUCCESS ) { // =16777215 is greater than 6
+                    newtext = "Success!  Reboot Required. Press One-More-Time to Reboot.";
+                    console.log(newtext);
+                    TABS.calibration.show_hide_steps(0);// hide steps when done
+
+                }
+                if ( FC.accelcal_count == mavlink20.ACCELCAL_VEHICLE_POS_FAILED) { // =16777216 is greater than 6
+                    newtext = "Failed. :-(  Reboot Required. Press One-More-Time to Reboot.";
+                    console.log(newtext);
+                    TABS.calibration.show_hide_steps(0);// hide steps when done
+
+                }
+                $('div.note').html(newtext+"<br>req:"+FC.accelcal_count+"<br>model["+TABS.calibration.model+"]<br>");
+
+            }
+
+        },1000);
+
+
+
+        // end accel cal code --------------------------------------------
 
         $('#calibrate-start-button2').on('click', function() {
 
