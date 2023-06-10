@@ -976,11 +976,15 @@ var mspHelper = (function (gui) {
                         // drop everything including and after the first null byte.
                         var _message = mavmsg.text.replace(/\0.*$/g,'');
                         console.log(_message);
+                        GUI.log(_message);
 
                         if (_message.startsWith('Place ')){
                             //FC.accelcal_count = 
                         }
 
+                        var flagNums = FC.getArmingFlagsRev();
+                        var bitname = null;
+                        var t = CONFIG.armingFlags;
                         switch(_message) {
                             case 'Place vehicle level and press any key.':
                             case 'Place vehicle on its LEFT side and press any key.':
@@ -988,31 +992,40 @@ var mspHelper = (function (gui) {
                             case 'Place vehicle nose DOWN and press any key.':
                             case 'Place vehicle nose UP and press any key.':
                             case 'Place vehicle on its BACK and press any key.':
+                                break;
                             case 'Calibration successful':
+                                bitname = "BLOCKED_ACCELEROMETER_NOT_CALIBRATED";
+                                CONFIG.armingFlags = bit_set(CONFIG.armingFlags, 0);//0 means clear bit on success
+                                break;
                             case 'Calibration FAILED':
+                                bitname = "BLOCKED_ACCELEROMETER_NOT_CALIBRATED";
+                                CONFIG.armingFlags = bit_set(CONFIG.armingFlags, flagNums[bitname]);
                                 break;
                             case 'PreArm: 3D Accel calibration needed':
+                                bitname = "BLOCKED_ACCELEROMETER_NOT_CALIBRATED";
+                                CONFIG.armingFlags = bit_set(CONFIG.armingFlags, flagNums[bitname]);
+                                break
                             case 'PreArm: Accels calibrated requires reboot':
                                 //todo
                                 break
                             case 'PreArm: Compass not healthy':
-                                //todo
-                                break
-                            case 'PreArm: AHRS: waiting for home':
-                                //todo
+                                bitname = "BLOCKED_COMPASS_NOT_CALIBRATED";
+                                CONFIG.armingFlags = bit_set(CONFIG.armingFlags, flagNums[bitname]);
                                 break
                             case 'PreArm: Waiting for RC':
-                                //todo
+                                bitname = "BLOCKED_RC_NOT_CALIBRATED";
+                                CONFIG.armingFlags = bit_set(CONFIG.armingFlags, flagNums[bitname]); 
                                 break
-                            case 'PreArm: Compass not healthy':
-                                //todo
-                                break
-                            case 'PreArm: Waiting for RC':
-                                //todo
+                            case 'AHRS: waiting for home':
+                                bitname = "BLOCKED_NAVIGATION_SAFETY";
+                                CONFIG.armingFlags = bit_set(CONFIG.armingFlags, flagNums[bitname]); 
                                 break
                             default:
-                                console.log('todo')
+                                console.log('todo',_message)
                                 break
+                        }
+                        if ( t !== CONFIG.armingFlags ) {
+                            console.log('rming flgss change',t,_message)
                         }
             
                 // buzz todo show it in the gui..

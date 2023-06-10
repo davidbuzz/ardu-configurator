@@ -67,6 +67,9 @@ TABS.calibration.initialize = function (callback) {
         //noinspection JSUnresolvedVariable
         GUI.log(chrome.i18n.getMessage('configurationEepromSaved'));
 
+        // enable utoconnect in the GUI, so rebooting doesn't mke drone go awy - TODO test this.
+        helper['autoconnect'] = true; 
+
         FC.accelcal_count = -1; // this is the variable name that mavproxy uses, and its used the same here.
 
         GUI.tab_switch_cleanup(function() {
@@ -250,6 +253,9 @@ TABS.calibration.initialize = function (callback) {
             //  return to stock white/blue after some time                           white             blue 
         
             $('#3d_cal_notes').html("3D Compass CAL ACCEPTED.")
+
+            GUI.log("Vehicle reports Compss cal OK.");
+
             mag_cal_accept();
             updateSensorData();
         });
@@ -269,6 +275,7 @@ TABS.calibration.initialize = function (callback) {
 
               }); 
             //  return to stock white/blue after some time                           white             blue 
+            GUI.log("Vehicle reports unable to do Compss cal, might be missing compass.");
 
             $('#3d_cal_notes').html("3D Compass CAL CANCELLED.")
             mag_cal_cancel();

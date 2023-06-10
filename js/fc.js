@@ -124,7 +124,7 @@ var FC = {
             battery_profile: 0,
             uid: [0, 0, 0],
             accelerometerTrims: [0, 0],
-            armingFlags: 0,
+            armingFlags: 0, // this sets all the pre-arm checks to fail: 0b100000000001111111100001111, //see CONFIG.armingFlags
             name: ''
         };
 
@@ -920,6 +920,24 @@ var FC = {
             14: "BLOCKED_RC_NOT_CALIBRATED",
             15: "BLOCKED_HARDWARE_FAILURE",
             26: "BLOCKED_INVALID_SETTING",
+        }
+    },
+    getArmingFlagsRev: function () {
+        // keep in sync with the above
+        return {
+            "OK_TO_ARM": 0,
+            "PREVENT_ARMING": 1,
+            "ARMED": 2,
+            "WAS_EVER_ARMED": 3,
+            "BLOCKED_UAV_NOT_LEVEL": 8,
+            "BLOCKED_SENSORS_CALIBRATING": 9,
+            "BLOCKED_SYSTEM_OVERLOADED": 10,
+            "BLOCKED_NAVIGATION_SAFETY": 11, // used for if GPS, EKF, AHRS stuff not ok.
+            "BLOCKED_COMPASS_NOT_CALIBRATED": 12,
+            "BLOCKED_ACCELEROMETER_NOT_CALIBRATED": 13,
+            "BLOCKED_RC_NOT_CALIBRATED": 14,
+            "BLOCKED_HARDWARE_FAILURE": 15,
+            "BLOCKED_INVALID_SETTING": 26,
         }
     },
     getArmingBlockingFlags: function() {
